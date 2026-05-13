@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
     private val isReady = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // installSplashScreen sebelum super.oncreate()
+        // instplashScreen sebelum super.oncreate()
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         SplashScreen(splashScreen)

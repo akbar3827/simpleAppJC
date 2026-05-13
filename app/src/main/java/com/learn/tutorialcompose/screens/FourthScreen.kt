@@ -1,9 +1,11 @@
 package com.learn.tutorialcompose.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -26,7 +28,9 @@ fun FourthScreen(
     onNavigateToMainScreen: () -> Unit,
     vm: MyViewModel
 ) {
-    Column {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
         Text("This is Screen-4")
         Button(
             onClick = {
