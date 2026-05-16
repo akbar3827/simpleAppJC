@@ -1,3 +1,5 @@
+import java.lang.module.ModuleFinder.compose
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -54,6 +56,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.material)
     implementation(libs.material3)
+    implementation(libs.androidx.constraintlayout.compose.v110)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

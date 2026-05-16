@@ -9,6 +9,7 @@ import com.google.gson.Gson
 
 class MyViewModel : ViewModel() {
     var textFieldState = mutableStateOf("")
+    var textFieldToSetTimer = mutableStateOf("")
 
     var responState by mutableStateOf<Response?>(null)
 

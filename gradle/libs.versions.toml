@@ -2,6 +2,7 @@
 agp = "9.0.0"
 coilCompose = "2.7.0"
 constraintlayoutCompose = "1.1.1"
+constraintlayoutComposeVersion = "1.1.0"
 coreKtx = "1.18.0"
 coreSplashscreen = "1.2.0"
 gson = "2.14.1"
@@ -19,6 +20,7 @@ navigationCompose = "2.9.8"
 
 [libraries]
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
+androidx-constraintlayout-compose-v110 = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutComposeVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }

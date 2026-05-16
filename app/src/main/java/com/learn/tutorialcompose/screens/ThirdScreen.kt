@@ -84,28 +84,21 @@ fun ThirdScreen(
         )
     )
 
-    val constrains = ConstraintSet {
-        val button = createRefFor("button")
-        val box = createRefFor("box")
-        val circularprogbar = createRefFor("circularprogressbar")
+    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+        val (
+            button,
+            buttonIncSize,
+            box,
+            circularProgressBar
+        ) = createRefs()
 
-        constrain(button) {
-            top.linkTo(box.bottom)
-        }
-        constrain(box) {
-            top.linkTo(parent.top)
-        }
-        constrain(circularprogbar) {
-            top.linkTo(button.bottom)
-        }
-    }
-
-    ConstraintLayout(constrains, modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .height(100.dp)
                 .fillMaxWidth()
-                .layoutId("button"),
+                .constrainAs(button) {
+                    top.linkTo(box.bottom)
+                },
             horizontalArrangement = Arrangement.Center
         ) {
             Button(
@@ -127,7 +120,9 @@ fun ThirdScreen(
             Modifier.fillMaxWidth()
                 .height(200.dp)
                 .fillMaxWidth()
-                .layoutId("box"),
+                .constrainAs(box) {
+                    top.linkTo(parent.top)
+                },
             horizontalArrangement = Arrangement.Center
         ) {
             RandomColor(
@@ -146,12 +141,14 @@ fun ThirdScreen(
         Box(
             Modifier.fillMaxWidth()
                 .height(400.dp)
-                .layoutId("circularprogressbar"),
+                .constrainAs(circularProgressBar) {
+                    top.linkTo(button.bottom)
+                },
             contentAlignment = Alignment.Center
         ) {
             CircularProgressBar(
-                percentage = 0.6823f,
-                number = 500,
+                percentage = 0.79866f,
+                number = 53253,
                 animDuration = 2500,
                 animDelay = 600
             )
@@ -192,7 +189,7 @@ fun CircularProgressBar(
     number: Int,
     fontSize: TextUnit = 28.sp,
     radius: Dp = 50.dp,
-    color: Color = Color.Green,
+    color: Color = Color.White.copy(alpha = 0.3f),
     strokeWidth: Dp = 8.dp,
     animDuration: Int = 1000,
     animDelay: Int = 0
@@ -213,9 +210,9 @@ fun CircularProgressBar(
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.size(radius * 2f)
+        modifier = Modifier.size(radius * 3f)
     ) {
-        Canvas(Modifier.size(radius * 2f)) {
+        Canvas(Modifier.size(radius * 3f)) {
             drawArc(
                 color = color,
                 startAngle = -90f,
@@ -225,7 +222,7 @@ fun CircularProgressBar(
             )
         }
         Text(
-            text = (curPercentage.value * number).toInt().toString(),
+            text = (curPercentage.value * number).toString(),
             color = Color.White.copy(alpha = 0.8f),
             fontSize = fontSize,
             fontWeight = FontWeight.Bold
