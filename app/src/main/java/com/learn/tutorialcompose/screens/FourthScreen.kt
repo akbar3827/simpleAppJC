@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -23,13 +21,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PointMode
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -96,7 +91,6 @@ fun FourthScreen(
                 Color.Green,
                 Color.DarkGray,
                 Color.Green,
-                vm = vm,
                 modifier = Modifier.size(200.dp)
             )
         }
@@ -110,15 +104,14 @@ fun Timer(
     inactiveBarColor: Color,
     activeBarColor: Color,
     modifier: Modifier = Modifier,
-    initalValue: Float = 1f,
-    strokeWidth: Dp = 5.dp,
-    vm: MyViewModel
+    initialValue: Float = 1f,
+    strokeWidth: Dp = 5.dp
 ) {
     var size by remember {
         mutableStateOf(IntSize.Zero)
     }
     var value by remember {
-        mutableStateOf(initalValue)
+        mutableStateOf(initialValue)
     }
     var currentTime by remember {
         mutableStateOf(totalTime)
@@ -136,7 +129,7 @@ fun Timer(
         else if (currentTime == 0L) {
             isTimerRunning = false
             currentTime = totalTime
-            value = initalValue
+            value = initialValue
         }
     }
     Box(
@@ -170,7 +163,7 @@ fun Timer(
                 )
             )
             val center = Offset(size.width / 2f, size.height / 2f)
-            val beta = (290f * value + 125f) * (PI / 180f).toFloat()
+            val beta = (125 + 290f * value) * (PI / 180f).toFloat()
             val r = size.width / 2f
             val a = cos(beta) * r
             val b = sin(beta) * r

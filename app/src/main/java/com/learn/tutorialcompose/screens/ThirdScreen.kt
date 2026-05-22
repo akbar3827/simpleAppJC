@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,7 +24,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -33,11 +37,15 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -87,10 +95,53 @@ fun ThirdScreen(
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (
             button,
-            buttonIncSize,
+            dropDown,
             box,
             circularProgressBar
         ) = createRefs()
+
+        Box(
+            Modifier.constrainAs(dropDown) {
+                top.linkTo(parent.top)
+            }
+                .padding(top = 45.dp, start = 15.dp, end = 15.dp)
+        ) {
+            DropDown(
+                text = "dropDown",
+                modifier = Modifier
+                    .padding(15.dp)
+            ) {
+                Text(
+                    "this is now revealed", Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .background(Color.Green)
+                )
+            }
+        }
+
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .constrainAs(box) {
+                    top.linkTo(dropDown.bottom)
+                },
+            horizontalArrangement = Arrangement.Center
+        ) {
+            RandomColor(
+                Modifier.size(200.dp),
+                colorr2,
+                {
+                    colorr.value = it
+                }
+            )
+            Box(
+                modifier = Modifier
+                    .size(size)
+                    .background(colorr.value)
+            )
+        }
 
         Row(
             modifier = Modifier
@@ -116,30 +167,9 @@ fun ThirdScreen(
                 Text(text = "increate the box size")
             }
         }
-        Row(
-            Modifier.fillMaxWidth()
-                .height(200.dp)
-                .fillMaxWidth()
-                .constrainAs(box) {
-                    top.linkTo(parent.top)
-                },
-            horizontalArrangement = Arrangement.Center
-        ) {
-            RandomColor(
-                Modifier.size(200.dp),
-                colorr2,
-                {
-                    colorr.value = it
-                }
-            )
-            Box(
-                modifier = Modifier
-                    .size(size)
-                    .background(colorr.value)
-            )
-        }
         Box(
-            Modifier.fillMaxWidth()
+            Modifier
+                .fillMaxWidth()
                 .height(400.dp)
                 .constrainAs(circularProgressBar) {
                     top.linkTo(button.bottom)
@@ -152,6 +182,70 @@ fun ThirdScreen(
                 animDuration = 2500,
                 animDelay = 600
             )
+        }
+    }
+}
+
+
+@Composable
+fun DropDown(
+    text: String,
+    modifier: Modifier = Modifier,
+    initiallyOpened: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    var isOpen by remember {
+        mutableStateOf(initiallyOpened)
+    }
+    val alpha = animateFloatAsState(
+        targetValue = if (isOpen) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = 500
+        )
+    )
+    val rotateX = animateFloatAsState(
+        targetValue = if (isOpen) 1f else -90f,
+        animationSpec = tween(
+            durationMillis = 500
+        )
+    )
+
+    Column(
+        Modifier.fillMaxWidth()
+    ) {
+        Row(
+            Modifier.fillMaxWidth(),
+            Arrangement.SpaceBetween,
+            Alignment.CenterVertically
+        ) {
+            Text(
+                text = text,
+                color = Color.White,
+                fontSize = 16.sp
+            )
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "Open or close the drop down",
+                tint = Color.White,
+                modifier = Modifier
+                    .clickable {
+                        isOpen = !isOpen
+                    }
+                    .scale(1f, if(isOpen) -1f else 1f)
+            )
+        }
+        Spacer(Modifier.height(10.dp))
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .graphicsLayer {
+                    rotationX = rotateX.value
+                    transformOrigin = TransformOrigin(0.5f, 0f)
+                }
+                .alpha(alpha.value)
+        ) {
+            content()
         }
     }
 }
@@ -172,6 +266,7 @@ fun RandomColor(
             }
     )
 }
+
 fun changeColor(updateColor: (Color) -> Unit) {
     updateColor(
         Color(
@@ -182,6 +277,7 @@ fun changeColor(updateColor: (Color) -> Unit) {
         )
     )
 }
+
 
 @Composable
 fun CircularProgressBar(
@@ -198,7 +294,7 @@ fun CircularProgressBar(
         mutableStateOf(false)
     }
     val curPercentage = animateFloatAsState(
-        targetValue = if(animationPlayed) percentage else 0f,
+        targetValue = if (animationPlayed) percentage else 0f,
         animationSpec = tween(
             durationMillis = animDuration,
             delayMillis = animDelay
