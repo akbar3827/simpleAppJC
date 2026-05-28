@@ -24,16 +24,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Link
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PersonAddAlt
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -63,9 +60,8 @@ import com.learn.tutorialcompose.R
 import com.learn.tutorialcompose.Screen
 import com.learn.tutorialcompose.ui.theme.colorlink
 import com.learn.tutorialcompose.ui.theme.inactiveColor
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import com.learn.tutorialcompose.IconWithText
 
 fun NavGraphBuilder.fifthNav(navController: NavController, vm: MyViewModel) {
     composable(Screen.FifthScreen.route) {
