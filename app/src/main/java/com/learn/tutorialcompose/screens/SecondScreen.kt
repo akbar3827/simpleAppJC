@@ -63,13 +63,6 @@ fun NavGraphBuilder.secondNav(navController: NavController, vm: MyViewModel) {
     }
 }
 
-data class Item(
-    val id: String,
-    val title: String,
-    val img: String,
-    val description: String
-)
-
 @Composable
 fun SecondScreen(
     onNavigateToMainScreen: () -> Unit,
@@ -90,42 +83,24 @@ fun SecondScreen(
     val description = "an miaoyi's my wife!!"
     val title = "who's husband of an miaoyi?"
 
-    val constrains = ConstraintSet {
-        val sayHello = createRefFor("sayhello")
-        val cardOfQuotes = createRefFor("cardofquotes")
-        val cardOfImg = createRefFor("cardofimg")
-        val buttonToHome = createRefFor("buttontohome")
+    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+        val (
+            sayHello,
+            cardOfQuotes,
+            cardOfImg,
+            buttonToHome
+        ) = createRefs()
         val guideline = createGuidelineFromTop(0.5f)
-
-        constrain(sayHello) {
-            top.linkTo(cardOfImg.top)
-            bottom.linkTo(cardOfQuotes.top)
-            start.linkTo(parent.start)
-        }
-        constrain(cardOfQuotes) {
-            top.linkTo(guideline)
-//            bottom.linkTo(parent.bottom)
-            start.linkTo(parent.start)
-        }
-        constrain(cardOfImg) {
-//            top.linkTo(sayHello.bottom)
-            bottom.linkTo(guideline)
-            start.linkTo(cardOfQuotes.end)
-        }
-        constrain(buttonToHome) {
-            top.linkTo(cardOfImg.bottom)
-            bottom.linkTo(cardOfQuotes.bottom)
-            end.linkTo(parent.end)
-        }
-    }
-
-    ConstraintLayout(constrains, modifier = Modifier.fillMaxSize()) {
 
         Box(
             modifier = Modifier
                 .height(100.dp)
                 .fillMaxWidth(0.5f)
-                .layoutId("sayhello"),
+                .constrainAs(sayHello) {
+                    top.linkTo(cardOfImg.top)
+                    bottom.linkTo(cardOfQuotes.top)
+                    start.linkTo(parent.start)
+                },
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -163,7 +138,10 @@ fun SecondScreen(
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth(0.5f)
-                .layoutId("cardofquotes"),
+                .constrainAs(cardOfQuotes) {
+                    top.linkTo(guideline)
+                    start.linkTo(parent.start)
+                },
             verticalAlignment = Alignment.CenterVertically
         ) {
             item {
@@ -178,7 +156,10 @@ fun SecondScreen(
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth(0.5f)
-                .layoutId("cardofimg"),
+                .constrainAs(cardOfImg) {
+                    bottom.linkTo(guideline)
+                    start.linkTo(cardOfQuotes.end)
+                },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -204,7 +185,11 @@ fun SecondScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.5f)
-                .layoutId("buttontohome"),
+                .constrainAs(buttonToHome) {
+                    top.linkTo(cardOfImg.bottom)
+                    bottom.linkTo(cardOfQuotes.bottom)
+                    end.linkTo(parent.end)
+                },
             contentAlignment = Alignment.Center
         ) {
             Button(

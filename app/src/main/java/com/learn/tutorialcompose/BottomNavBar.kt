@@ -1,6 +1,5 @@
 package com.learn.tutorialcompose
 
-import android.graphics.Paint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -8,9 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,14 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.LineHeightStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.currentBackStackEntryAsState
-
+import com.learn.tutorialcompose.ui.theme.BottomNavColor
+import com.learn.tutorialcompose.ui.theme.BottomNavIconColor
 
 
 @Composable fun BottomNavBar(
@@ -34,17 +28,18 @@ import androidx.navigation.compose.currentBackStackEntryAsState
     modifier: Modifier = Modifier,
     onItemCLick: (BottomNavItem) -> Unit
 ) {
-
     NavigationBar(
-        containerColor = Color.Gray,
+        containerColor = BottomNavColor,
         contentColor = Color.White,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .height(100.dp)
     ) {
         items.forEach {
             val selected =
                 it.route == navController.currentBackStackEntryAsState().value?.destination?.route
+            
             NavigationBarItem(
                 selected = selected,
                 onClick = { onItemCLick(it) },
@@ -58,8 +53,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
                 },
                 label = { if(selected) Text(it.name) },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color.Green,
-                    unselectedIconColor = Color.White
+                    indicatorColor = Color.Transparent,
+                    selectedIconColor = BottomNavIconColor,
+                    unselectedIconColor = Color.White,
+                    selectedTextColor = BottomNavIconColor,
+                    unselectedTextColor = Color.White
                 )
             )
         }

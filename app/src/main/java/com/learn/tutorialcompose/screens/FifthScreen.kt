@@ -62,6 +62,7 @@ import com.learn.tutorialcompose.ui.theme.colorlink
 import com.learn.tutorialcompose.ui.theme.inactiveColor
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import com.learn.tutorialcompose.IconWithText
+import com.learn.tutorialcompose.ui.theme.BgGray
 
 fun NavGraphBuilder.fifthNav(navController: NavController, vm: MyViewModel) {
     composable(Screen.FifthScreen.route) {
@@ -85,6 +86,7 @@ fun FifthScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = BgGray)
             .padding(top = 50.dp)
     ) {
         TopBar(

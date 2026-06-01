@@ -35,6 +35,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.learn.tutorialcompose.MyViewModel
 import com.learn.tutorialcompose.Screen
+import com.learn.tutorialcompose.ui.theme.BgGray
 import kotlinx.coroutines.delay
 import kotlin.math.PI
 import kotlin.math.cos
@@ -59,6 +60,7 @@ fun FourthScreen(
 
     ConstraintLayout(modifier = Modifier
         .fillMaxSize()
+        .background(color = BgGray)
         .padding(vertical = 18.dp)
     ) {
         val (

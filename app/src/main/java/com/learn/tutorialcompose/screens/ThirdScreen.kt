@@ -59,6 +59,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.learn.tutorialcompose.MyViewModel
 import com.learn.tutorialcompose.Screen
+import com.learn.tutorialcompose.ui.theme.BgGray
 import kotlin.random.Random
 
 fun NavGraphBuilder.thirdNav(navController: NavController, vm: MyViewModel) {
@@ -211,7 +212,8 @@ fun DropDown(
     )
 
     Column(
-        Modifier.fillMaxWidth()
+        modifier.fillMaxWidth()
+            .background(color = BgGray)
     ) {
         Row(
             Modifier.fillMaxWidth(),

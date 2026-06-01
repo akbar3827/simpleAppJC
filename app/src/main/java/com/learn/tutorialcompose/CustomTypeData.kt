@@ -1,7 +1,5 @@
 package com.learn.tutorialcompose
 
-import androidx.compose.ui.graphics.painter.Painter
-
 data class IconWithText(
     val icon: Int,
     val text: String
@@ -11,4 +9,14 @@ data class BottomNavItem(
     val name: String,
     val route: String,
     val icon: Int
+)
+
+data class SwitchScreen(
+    val name: String,
+    val screen: () -> Unit
+)
+
+data class ListItem(
+    val name: String,
+    val isSelected: Boolean
 )
