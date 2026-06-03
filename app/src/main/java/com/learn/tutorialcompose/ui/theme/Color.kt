@@ -34,3 +34,5 @@ val ColorBox = Color(0xff6f88fc)
 val BottomNavColor = Color(0xff43506c)
 val BottomNavIconColor = Color(0xffef4b4c)
 val BgTextField = Color(0xffe9e9eb)
+
+val Purple = Color(0xffa163f7)

@@ -2,12 +2,19 @@ package com.learn.tutorialcompose.screens
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,9 +51,7 @@ import kotlin.math.sin
 fun NavGraphBuilder.fourthNav(navController: NavController, vm: MyViewModel) {
     composable(Screen.FourthScreen.route) {
         FourthScreen(
-            onNavigateToMainScreen = {
-                navController.popBackStack()
-            },
+            navController = navController,
             vm = vm
         )
     }
@@ -54,32 +59,39 @@ fun NavGraphBuilder.fourthNav(navController: NavController, vm: MyViewModel) {
 
 @Composable
 fun FourthScreen(
-    onNavigateToMainScreen: () -> Unit,
+    navController: NavController,
     vm: MyViewModel
 ) {
 
     ConstraintLayout(modifier = Modifier
         .fillMaxSize()
-        .background(color = BgGray)
-        .padding(vertical = 18.dp)
+        .background(color = Color.White)
+        .padding(top = 40.dp)
     ) {
         val (
             buttonHomme,
             timer
         ) = createRefs()
 
-
-        Button(
-            onClick = {
-                onNavigateToMainScreen()
-            },
-            modifier = Modifier.constrainAs(buttonHomme) {
+        Box(
+            contentAlignment = Alignment.CenterStart,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(80.dp)
+                .constrainAs(buttonHomme) {
                 top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            }.padding(top = 20.dp)
+            }
         ) {
-            Text("Back to main screen")
+            Icon(
+                imageVector = Icons.Default.ArrowBackIosNew,
+                contentDescription = "back to home page",
+                modifier = Modifier.clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    navController.popBackStack()
+                }.padding(horizontal = 10.dp)
+            )
         }
         Box(modifier = Modifier.constrainAs(timer) {
             top.linkTo(buttonHomme.bottom)
@@ -181,7 +193,7 @@ fun Timer(
             text = (currentTime / 1000L).toString(),
             fontSize = 44.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White.copy(0.9f)
+            color = BgGray
         )
         Button(
             onClick = {
@@ -196,7 +208,10 @@ fun Timer(
                 }
             )
         ) {
-            Text(if(isTimerRunning && currentTime > 0L) "Stop" else "Start")
+            Text(
+                if(isTimerRunning && currentTime > 0L) "Stop" else "Start",
+                color = BgGray
+                )
         }
     }
 }

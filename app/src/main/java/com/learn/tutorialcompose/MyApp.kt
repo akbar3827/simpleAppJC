@@ -14,6 +14,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.learn.tutorialcompose.screens.BunchOfCodesScreen
 import com.learn.tutorialcompose.screens.ProfileScreen
+import com.learn.tutorialcompose.screens.bunchOfCodesScreen
+import com.learn.tutorialcompose.screens.codesScreen
+import com.learn.tutorialcompose.screens.detailScreen
 import com.learn.tutorialcompose.screens.fifthNav
 import com.learn.tutorialcompose.screens.firstNav
 import com.learn.tutorialcompose.screens.fourthNav
@@ -69,7 +72,7 @@ fun MyApp() {
             startDestination = Screen.HomeScreen.route,
         ) {
             homeScreen(navController, vm)
-            BunchOfCodesScreen(navController, vm)
+            bunchOfCodesScreen(navController, vm)
             ProfileScreen(navController, vm)
             firstNav(navController, vm)
             secondNav(navController, vm)
@@ -77,6 +80,8 @@ fun MyApp() {
             fourthNav(navController, vm)
             fifthNav(navController, vm)
             sixthNav(navController, vm)
+            detailScreen(navController, vm.textFieldState2.value)
+            codesScreen(navController, vm)
         }
     }
 }

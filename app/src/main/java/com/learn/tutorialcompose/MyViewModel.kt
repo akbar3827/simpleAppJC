@@ -9,9 +9,18 @@ import com.google.gson.Gson
 
 class MyViewModel : ViewModel() {
     var textFieldState = mutableStateOf("")
-    var textFieldToSetTimer = mutableStateOf("")
-
+    var textFieldState2 = mutableStateOf("")
+    var textFieldState3 = mutableStateOf("")
     var responState by mutableStateOf<Response?>(null)
+
+    val codeMap = mapOf(
+        Screen.FirstScreen.route to CodeFirstScreen,
+        Screen.SecondScreen.route to CodeSecondScreen,
+        Screen.ThirdScreen.route to CodeThirdScreen,
+        Screen.FourthScreen.route to CodeFourthScreen,
+        Screen.FifthScreen.route to CodeFifthScreen,
+        Screen.SixthScreen.route to CodeSixthScreen
+    )
 
     fun loadData(context: Context, jsonFile: String) {
         val result = loadRespon(context)

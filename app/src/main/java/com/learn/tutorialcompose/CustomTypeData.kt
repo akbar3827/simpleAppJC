@@ -20,3 +20,8 @@ data class ListItem(
     val name: String,
     val isSelected: Boolean
 )
+data class SwitchScreenCode(
+    val name: String,
+    val screen: () -> Unit,
+    val code: String
+)

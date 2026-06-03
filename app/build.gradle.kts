@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.androidx.constraintlayout.compose.v110)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.accompanist.permissions)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

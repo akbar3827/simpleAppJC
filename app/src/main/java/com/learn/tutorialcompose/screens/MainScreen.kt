@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,24 +67,7 @@ import kotlinx.coroutines.launch
 fun NavGraphBuilder.homeScreen(navController: NavController, vm: MyViewModel) {
     composable(Screen.HomeScreen.route) {
         HomeScreen(
-            onNavigateToFirstScreen = {
-                navController.navigate(Screen.FirstScreen.route)
-            },
-            onNavigateToSecondScreen = {
-                navController.navigate(Screen.SecondScreen.route)
-            },
-            onNavigateToThirdScreen = {
-                navController.navigate(Screen.ThirdScreen.route)
-            },
-            onNavigateToFourthScreen = {
-                navController.navigate(Screen.FourthScreen.route)
-            },
-            onNavigateToFifthScreen = {
-                navController.navigate(Screen.FifthScreen.route)
-            },
-            onNavigateToSixthScreen = {
-                navController.navigate(Screen.SixthScreen.route)
-            },
+            navController = navController,
             vm = vm
         )
     }
@@ -91,12 +75,7 @@ fun NavGraphBuilder.homeScreen(navController: NavController, vm: MyViewModel) {
 
 @Composable
 fun HomeScreen(
-    onNavigateToFirstScreen: () -> Unit,
-    onNavigateToSecondScreen: () -> Unit,
-    onNavigateToThirdScreen: () -> Unit,
-    onNavigateToFourthScreen: () -> Unit,
-    onNavigateToFifthScreen: () -> Unit,
-    onNavigateToSixthScreen: () -> Unit,
+    navController: NavController,
     vm: MyViewModel
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -186,27 +165,27 @@ fun HomeScreen(
                 screens = listOf(
                     SwitchScreen(
                         name = "FirstScreen",
-                        screen = onNavigateToFirstScreen
+                        screen = { navController.navigate(Screen.FirstScreen.route) }
                     ),
                     SwitchScreen(
                         name = "SecondScreen",
-                        screen = onNavigateToSecondScreen
+                        screen = { navController.navigate(Screen.SecondScreen.route) }
                     ),
                     SwitchScreen(
                         name = "ThirdScreen",
-                        screen = onNavigateToThirdScreen
+                        screen = { navController.navigate(Screen.ThirdScreen.route) }
                     ),
                     SwitchScreen(
                         name = "FourthScreen",
-                        screen = onNavigateToFourthScreen
+                        screen = { navController.navigate(Screen.FourthScreen.route) }
                     ),
                     SwitchScreen(
                         name = "FifthScreen",
-                        screen = onNavigateToFifthScreen
+                        screen = { navController.navigate(Screen.FifthScreen.route) }
                     ),
                     SwitchScreen(
                         name = "SixthScreen",
-                        screen = onNavigateToSixthScreen
+                        screen = { navController.navigate(Screen.SixthScreen.route) }
                     )
                 )
             )
@@ -240,8 +219,11 @@ fun BunchOFScreen(
                                 .width(150.dp)
                                 .clip(shape = RoundedCornerShape(16.dp))
                                 .background(ColorBox)
-                                .clickable {
-                                    it.screen
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
+                                    it.screen()
                                 },
                             contentAlignment = Alignment.Center
                         ) {
