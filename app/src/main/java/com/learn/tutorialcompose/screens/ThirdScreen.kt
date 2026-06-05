@@ -60,23 +60,16 @@ import androidx.navigation.compose.composable
 import com.learn.tutorialcompose.MyViewModel
 import com.learn.tutorialcompose.Screen
 import com.learn.tutorialcompose.ui.theme.BgGray
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlin.random.Random
 
-fun NavGraphBuilder.thirdNav(navController: NavController, vm: MyViewModel) {
-    composable(Screen.ThirdScreen.route) {
-        ThirdScreen(
-            onNavigateToMainScreen = {
-                navController.popBackStack()
-            },
-            vm = vm
-        )
-    }
-}
 
+@Destination<RootGraph>
 @Composable
 fun ThirdScreen(
-    onNavigateToMainScreen: () -> Unit,
-    vm: MyViewModel
+    navigator: DestinationsNavigator
 ) {
     var sizeState by remember {
         mutableStateOf(200.dp)
@@ -155,7 +148,7 @@ fun ThirdScreen(
         ) {
             Button(
                 onClick = {
-                    onNavigateToMainScreen()
+                    navigator.popBackStack()
                 }
             ) {
                 Text("Back to main screen")

@@ -51,21 +51,16 @@ import com.learn.tutorialcompose.quotes
 import kotlinx.coroutines.delay
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-fun NavGraphBuilder.secondNav(navController: NavController, vm: MyViewModel) {
-    composable(Screen.SecondScreen.route) {
-        SecondScreen(
-            onNavigateToMainScreen = {
-                navController.popBackStack()
-            },
-            vm = vm
-        )
-    }
-}
 
+@Destination<RootGraph>
 @Composable
 fun SecondScreen(
-    onNavigateToMainScreen: () -> Unit,
+    navigator: DestinationsNavigator,
     vm: MyViewModel
 ) {
     val fontFamily = FontFamily(
@@ -194,7 +189,7 @@ fun SecondScreen(
         ) {
             Button(
                 onClick = {
-                    onNavigateToMainScreen()
+                    navigator.popBackStack()
                 }
             ) {
                 Text("Back")

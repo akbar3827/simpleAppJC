@@ -18,33 +18,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import com.learn.tutorialcompose.MyViewModel
-import com.learn.tutorialcompose.Screen
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-fun NavGraphBuilder.detailScreen(navController: NavController, name: String) {
-    composable(
-        route = Screen.DetailScreen.route + "/{name}",
-        arguments = listOf(
-            navArgument(name = "name", builder = {
-                type = NavType.StringType
-            })
-        )
-    ) { entry ->
-        DetailScreen(
-            navController = navController,
-            name = entry.arguments?.getString("name") ?: ""
-        )
-    }
-}
 
+@Destination<RootGraph>
 @Composable
 fun DetailScreen(
-    navController: NavController,
-    name: String?,
+    navigator: DestinationsNavigator,
+    name: String?
 ) {
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -63,7 +46,7 @@ fun DetailScreen(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
                     ) {
-                        navController.popBackStack()
+                        navigator.popBackStack()
                     }
                     .padding(horizontal = 10.dp)
             )

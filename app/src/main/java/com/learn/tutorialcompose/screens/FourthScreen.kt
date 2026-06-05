@@ -43,24 +43,19 @@ import androidx.navigation.compose.composable
 import com.learn.tutorialcompose.MyViewModel
 import com.learn.tutorialcompose.Screen
 import com.learn.tutorialcompose.ui.theme.BgGray
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.delay
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-fun NavGraphBuilder.fourthNav(navController: NavController, vm: MyViewModel) {
-    composable(Screen.FourthScreen.route) {
-        FourthScreen(
-            navController = navController,
-            vm = vm
-        )
-    }
-}
 
+@Destination<RootGraph>
 @Composable
 fun FourthScreen(
-    navController: NavController,
-    vm: MyViewModel
+    navigator: DestinationsNavigator
 ) {
 
     ConstraintLayout(modifier = Modifier
@@ -89,7 +84,7 @@ fun FourthScreen(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ) {
-                    navController.popBackStack()
+                    navigator.popBackStack()
                 }.padding(horizontal = 10.dp)
             )
         }

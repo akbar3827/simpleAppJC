@@ -10,6 +10,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +29,8 @@ import com.learn.tutorialcompose.ui.theme.BottomNavIconColor
     modifier: Modifier = Modifier,
     onItemCLick: (BottomNavItem) -> Unit
 ) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     NavigationBar(
         containerColor = BottomNavColor,
         contentColor = Color.White,
@@ -37,8 +40,7 @@ import com.learn.tutorialcompose.ui.theme.BottomNavIconColor
             .height(100.dp)
     ) {
         items.forEach {
-            val selected =
-                it.route == navController.currentBackStackEntryAsState().value?.destination?.route
+            val selected = it.destination.route == currentRoute
             
             NavigationBarItem(
                 selected = selected,
@@ -47,11 +49,11 @@ import com.learn.tutorialcompose.ui.theme.BottomNavIconColor
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
                             painter = painterResource(id = it.icon),
-                            contentDescription = it.name
+                            contentDescription = it.label
                         )
                     }
                 },
-                label = { if(selected) Text(it.name) },
+                label = { if(selected) Text(it.label) },
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = Color.Transparent,
                     selectedIconColor = BottomNavIconColor,
