@@ -1,6 +1,822 @@
 package com.learn.tutorialcompose
 
-val CodeFirstScreen = """
+val CodeOfMainActivity = """
+    package com.learn.tutorialcompose
+
+    import android.os.Bundle
+    import androidx.activity.ComponentActivity
+    import androidx.activity.compose.setContent
+    import androidx.activity.enableEdgeToEdge
+    import androidx.compose.material3.Scaffold
+    import androidx.compose.runtime.Composable
+    import androidx.compose.runtime.mutableStateOf
+    import androidx.core.splashscreen.SplashScreen
+    import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+    import androidx.lifecycle.lifecycleScope
+    import androidx.navigation.compose.NavHost
+    import androidx.navigation.compose.composable
+    import androidx.navigation.compose.rememberNavController
+    import com.learn.tutorialcompose.screens.FirstScreen
+    import kotlinx.coroutines.delay
+    import kotlinx.coroutines.launch
+
+    class MainActivity : ComponentActivity() {
+        private val isReady = mutableStateOf(false)
+
+        override fun onCreate(savedInstanceState: Bundle?) {
+            // instplashScreen sebelum super.oncreate()
+            val splashScreen = installSplashScreen()
+            super.onCreate(savedInstanceState)
+            SplashScreen(splashScreen)
+            enableEdgeToEdge()
+            setContent {
+                MyApp()
+            }
+        }
+
+        fun SplashScreen(splashScreen: SplashScreen, ) {
+            // show the splashScreen if the value of isReady is true
+            splashScreen.setKeepOnScreenCondition { !isReady.value }
+
+            lifecycleScope.launch {
+                delay(3000)
+                isReady.value = true
+            }
+        }
+    }
+""".trimIndent()
+val CodeofMyApp = """
+    package com.learn.tutorialcompose
+
+    import androidx.compose.foundation.layout.padding
+    import androidx.compose.material3.Scaffold
+    import androidx.compose.runtime.Composable
+    import androidx.compose.ui.Modifier
+    import androidx.compose.runtime.getValue
+    import androidx.lifecycle.viewmodel.compose.viewModel
+    import androidx.navigation.compose.currentBackStackEntryAsState
+    import androidx.navigation.compose.rememberNavController
+    import com.ramcosta.composedestinations.DestinationsNavHost
+    import com.ramcosta.composedestinations.generated.NavGraphs
+    import com.ramcosta.composedestinations.generated.destinations.BunchOfCodesScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
+    import com.ramcosta.composedestinations.navigation.dependency
+
+    @Composable
+    fun MyApp() {
+        val navController = rememberNavController()
+        val vm: MyViewModel = viewModel()
+        // using currentBackStackEntryAsState() because i wanna change the UI too
+        val currentBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentDestination = currentBackStackEntry?.destination?.route
+
+        Scaffold(
+            bottomBar = {
+                if (currentDestination in vm.navScreenIsVisible) {
+                    BottomNavBar(
+                        navController = navController,
+                        items = listOf(
+                            BottomNavItem(
+                                label = "home",
+                                icon = R.drawable.ic_gemini,
+                                destination = HomeScreenDestination
+                            ),
+                            BottomNavItem(
+                                label = "code",
+                                icon = R.drawable.ic_gemini,
+                                destination = BunchOfCodesScreenDestination
+                            ),
+                            BottomNavItem(
+                                label = "profile",
+                                icon = R.drawable.ic_gemini,
+                                destination = ProfileScreenDestination
+                            )
+                        )
+                    ) { item ->
+                        navController.navigate(item.destination.route) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                }
+            }
+        ) { padding ->
+            DestinationsNavHost(
+                navGraph = NavGraphs.root,
+                navController = navController,
+                modifier = Modifier.padding(padding),
+                dependenciesContainerBuilder = {
+                    dependency(vm)
+                }
+            )
+        }
+    }
+""".trimIndent()
+val CodeOfMyViewModel = """
+    package com.learn.tutorialcompose
+
+    import android.content.Context
+    import androidx.compose.runtime.MutableState
+    import androidx.compose.runtime.getValue
+    import androidx.compose.runtime.mutableStateOf
+    import androidx.compose.runtime.setValue
+    import androidx.lifecycle.ViewModel
+    import com.google.gson.Gson
+    import com.ramcosta.composedestinations.generated.destinations.BunchOfCodesScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.FifthScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.FirstScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.FourthScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.SecondScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.SixthScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.ThirdScreenDestination
+
+    class MyViewModel : ViewModel() {
+        var textFieldState:MutableState<String> = mutableStateOf("")
+        var textFieldState2:MutableState<String> = mutableStateOf("")
+        var textFieldState3:MutableState<String> = mutableStateOf("")
+        var responState: Response? by mutableStateOf(null)
+
+        val codeMap:Map<String,String> = mapOf(
+            "MainActivity" to CodeOfMainActivity,
+            "MyApp" to CodeofMyApp,
+            "ViewModel" to CodeOfMyViewModel,
+            "MainScreen" to CodeOfMainScreen,
+            "BunchOfScreen" to CodeOfBunchOfCodesScreen,
+            "ProfileScreen" to CodeOfProfileScreen,
+            FirstScreenDestination.route to CodeOfFirstScreen,
+            SecondScreenDestination.route to CodeofSecondScreen,
+            ThirdScreenDestination.route to CodeOfThirdScreen,
+            FourthScreenDestination.route to CodeOfFourthScreen,
+            FifthScreenDestination.route to CodeofFifthScreen,
+            SixthScreenDestination.route to CodeOfSixthScreen,
+            "CodesScreen" to CodeOfCodesScreen,
+            "CodeOfDetailScreen" to CodeOfDetailScreen,
+            "BottomNavBar" to CodeOfBottomNavbar,
+            "CustomTypeData" to CodeOfCustomTypeData,
+            "Respons" to CodeOfResponse,
+            "Screen" to CodeOfScreen
+        )
+        val navScreenIsVisible:List<String> = listOf(
+            HomeScreenDestination.route,
+            BunchOfCodesScreenDestination.route,
+            ProfileScreenDestination.route
+        )
+
+        fun loadData(context: Context, jsonFile: String) {
+            val result = loadRespon(context)
+            responState = result
+        }
+    }
+
+
+    fun loadRespon(context: Context): Response? {
+        return try {
+            val jsonString: String = readJson(context)
+
+            Gson().fromJson(jsonString, Response::class.java)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun readJson(context: Context): String {
+        return context.assets.open("card.json")
+            .bufferedReader()
+            .use { it.readText() }
+    }
+""".trimIndent()
+val CodeOfMainScreen = """
+    package com.learn.tutorialcompose.screens
+
+    import androidx.compose.foundation.background
+    import androidx.compose.foundation.clickable
+    import androidx.compose.foundation.interaction.MutableInteractionSource
+    import androidx.compose.foundation.layout.Arrangement
+    import androidx.compose.foundation.layout.Box
+    import androidx.compose.foundation.layout.fillMaxSize
+    import androidx.compose.foundation.layout.fillMaxWidth
+    import androidx.compose.foundation.layout.height
+    import androidx.compose.foundation.layout.padding
+    import androidx.compose.foundation.layout.width
+    import androidx.compose.foundation.lazy.grid.GridCells
+    import androidx.compose.foundation.lazy.grid.GridItemSpan
+    import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+    import androidx.compose.foundation.shape.RoundedCornerShape
+    import androidx.compose.foundation.text.BasicTextField
+    import androidx.compose.material.icons.Icons
+    import androidx.compose.material.icons.filled.ArrowBackIosNew
+    import androidx.compose.material3.Button
+    import androidx.compose.material3.ButtonDefaults
+    import androidx.compose.material3.Icon
+    import androidx.compose.material3.Scaffold
+    import androidx.compose.material3.SnackbarHost
+    import androidx.compose.material3.SnackbarHostState
+    import androidx.compose.material3.Text
+    import androidx.compose.runtime.Composable
+    import androidx.compose.runtime.remember
+    import androidx.compose.runtime.rememberCoroutineScope
+    import androidx.compose.ui.Alignment
+    import androidx.compose.ui.Modifier
+    import androidx.compose.ui.draw.clip
+    import androidx.compose.ui.draw.scale
+    import androidx.compose.ui.graphics.Color
+    import androidx.compose.ui.graphics.SolidColor
+    import androidx.compose.ui.text.SpanStyle
+    import androidx.compose.ui.text.TextStyle
+    import androidx.compose.ui.text.buildAnnotatedString
+    import androidx.compose.ui.text.font.FontWeight
+    import androidx.compose.ui.text.withStyle
+    import androidx.compose.ui.unit.dp
+    import androidx.compose.ui.unit.sp
+    import androidx.constraintlayout.compose.ConstraintLayout
+    import com.learn.tutorialcompose.MyViewModel
+    import com.learn.tutorialcompose.SwitchScreen
+    import com.learn.tutorialcompose.ui.theme.BgTextField
+    import com.learn.tutorialcompose.ui.theme.BottomNavIconColor
+    import com.learn.tutorialcompose.ui.theme.ColorBox
+    import com.ramcosta.composedestinations.annotation.Destination
+    import com.ramcosta.composedestinations.annotation.RootGraph
+    import com.ramcosta.composedestinations.generated.destinations.FifthScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.FirstScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.FourthScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.SecondScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.SixthScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.ThirdScreenDestination
+    import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+    import kotlinx.coroutines.CoroutineScope
+    import kotlinx.coroutines.launch
+
+
+    @Destination<RootGraph>(start = true)
+    @Composable
+    fun HomeScreen(
+        navigator: DestinationsNavigator,
+        vm: MyViewModel
+    ) {
+        val snackbarHostState = remember { SnackbarHostState() }
+        val scope: CoroutineScope = rememberCoroutineScope()
+
+        Scaffold(
+            modifier = Modifier.background(Color.DarkGray),
+            snackbarHost = { SnackBarBox(snackbarHostState = snackbarHostState) }
+        ) { padding ->
+            ConstraintLayout(
+                modifier = Modifier
+                    .background(color = Color.White)
+                    .padding()
+            ) {
+                val (
+                    textField,
+                    inputButton,
+                    bunchOfScreens
+                ) = createRefs()
+
+                BasicTextField(
+                    value = vm.textFieldState.value,
+                    singleLine = true,
+                    onValueChange = { vm.textFieldState.value = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 30.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(BgTextField)
+                        .padding(start = 12.dp, end = 60.dp, top = 14.dp, bottom = 15.dp)
+                        .constrainAs(textField) {
+                            top.linkTo(parent.top, margin = 50.dp)
+                        },
+                    cursorBrush = SolidColor(Color.Black.copy(alpha = 0.3f)),
+                    textStyle = TextStyle(
+                        fontSize = 16.sp,
+                        color = Color.Gray
+                    ),
+                    decorationBox = { innerTextField ->
+                        if (vm.textFieldState.value.isEmpty()) {
+                            Text(
+                                text = "Search",
+                                color = Color.Gray.copy(alpha = 0.7f),
+                                fontSize = 16.sp
+                            )
+                        }
+                        innerTextField()
+                    }
+                )
+                Button(
+                    modifier = Modifier
+                        .height(48.dp)
+                        .width(60.dp)
+                        .constrainAs(inputButton) {
+                            top.linkTo(textField.top)
+                            end.linkTo(textField.end, margin = 25.dp)
+                        },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = BottomNavIconColor,
+                        contentColor = Color.White,
+                        disabledContainerColor = BottomNavIconColor,
+                        disabledContentColor = Color.White.copy(alpha = 0.5f)
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    onClick = {
+                        scope.launch {
+                            if (vm.textFieldState.value.isEmpty()) {
+                                snackbarHostState.showSnackbar("the value's empty")
+                            } else {
+                                snackbarHostState.showSnackbar("Please enter the correct screen name")
+                            }
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBackIosNew,
+                        contentDescription = "enter",
+                        tint = Color.White,
+                        modifier = Modifier.scale(-1f, 1f)
+                    )
+                }
+                BunchOFScreen(
+                    modifier = Modifier.constrainAs(bunchOfScreens) {
+                        top.linkTo(textField.bottom)
+                    },
+                    vm = vm,
+                    screens = listOf(
+                        SwitchScreen(
+                            name = "FirstScreen",
+                            screen = { navigator.navigate(FirstScreenDestination) }
+                        ),
+                        SwitchScreen(
+                            name = "SecondScreen",
+                            screen = { navigator.navigate(SecondScreenDestination) }
+                        ),
+                        SwitchScreen(
+                            name = "ThirdScreen",
+                            screen = { navigator.navigate(ThirdScreenDestination) }
+                        ),
+                        SwitchScreen(
+                            name = "FourthScreen",
+                            screen = { navigator.navigate(FourthScreenDestination) }
+                        ),
+                        SwitchScreen(
+                            name = "FifthScreen",
+                            screen = { navigator.navigate(FifthScreenDestination) }
+                        ),
+                        SwitchScreen(
+                            name = "SixthScreen",
+                            screen = { navigator.navigate(SixthScreenDestination) }
+                        )
+                    )
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun BunchOFScreen(
+        screens: List<SwitchScreen>,
+        modifier: Modifier = Modifier,
+        vm: MyViewModel
+    ) {
+        LazyVerticalGrid(
+            modifier = modifier
+                .background(color = Color.White)
+                .padding(top = 30.dp)
+                .padding(horizontal = 18.dp),
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            val textInput = vm.textFieldState.value
+            if (textInput.isNotEmpty()) {
+                screens.forEach {
+                    if (it.name.lowercase().contains(textInput.lowercase().trim())) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .height(150.dp)
+                                    .width(150.dp)
+                                    .clip(shape = RoundedCornerShape(16.dp))
+                                    .background(ColorBox)
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null
+                                    ) {
+                                        it.screen()
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = it.name,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
+                }
+            } else {
+                items(screens.size) {
+                    Box(
+                        modifier = Modifier
+                            .height(150.dp)
+                            .width(150.dp)
+                            .clip(shape = RoundedCornerShape(16.dp))
+                            .background(ColorBox)
+                            .clickable {
+                                screens[it].screen()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = screens[it].name,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+            item(span = { GridItemSpan(2) }) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .background(color = Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        buildAnnotatedString {
+                            append("Created by")
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            ) {
+                                append(" MOH. AKBAR KURNIAWAN")
+                            }
+                        },
+                        color = Color.DarkGray
+                    )
+                }
+            }
+        }
+    }
+
+
+    @Composable
+    fun SnackBarBox(
+        snackbarHostState: SnackbarHostState
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(horizontal = 16.dp, vertical = 30.dp)
+            )
+        }
+    }
+""".trimIndent()
+val CodeOfBunchOfCodesScreen = """
+    package com.learn.tutorialcompose.screens
+
+    import androidx.compose.foundation.background
+    import androidx.compose.foundation.clickable
+    import androidx.compose.foundation.interaction.MutableInteractionSource
+    import androidx.compose.foundation.layout.Arrangement
+    import androidx.compose.foundation.layout.Box
+    import androidx.compose.foundation.layout.fillMaxWidth
+    import androidx.compose.foundation.layout.height
+    import androidx.compose.foundation.layout.padding
+    import androidx.compose.foundation.layout.width
+    import androidx.compose.foundation.lazy.LazyColumn
+    import androidx.compose.foundation.lazy.grid.GridCells
+    import androidx.compose.foundation.lazy.grid.GridItemSpan
+    import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+    import androidx.compose.foundation.shape.RoundedCornerShape
+    import androidx.compose.foundation.text.BasicTextField
+    import androidx.compose.material.icons.Icons
+    import androidx.compose.material.icons.filled.ArrowBackIosNew
+    import androidx.compose.material3.Button
+    import androidx.compose.material3.ButtonDefaults
+    import androidx.compose.material3.Icon
+    import androidx.compose.material3.Scaffold
+    import androidx.compose.material3.SnackbarHostState
+    import androidx.compose.material3.Text
+    import androidx.compose.runtime.Composable
+    import androidx.compose.runtime.remember
+    import androidx.compose.runtime.rememberCoroutineScope
+    import androidx.compose.ui.Alignment
+    import androidx.compose.ui.Modifier
+    import androidx.compose.ui.draw.clip
+    import androidx.compose.ui.draw.scale
+    import androidx.compose.ui.graphics.Color
+    import androidx.compose.ui.graphics.SolidColor
+    import androidx.compose.ui.text.SpanStyle
+    import androidx.compose.ui.text.TextStyle
+    import androidx.compose.ui.text.buildAnnotatedString
+    import androidx.compose.ui.text.font.FontWeight
+    import androidx.compose.ui.text.withStyle
+    import androidx.compose.ui.unit.dp
+    import androidx.compose.ui.unit.sp
+    import androidx.constraintlayout.compose.ConstraintLayout
+    import androidx.lifecycle.viewmodel.compose.viewModel
+    import androidx.navigation.NavController
+    import androidx.navigation.NavGraphBuilder
+    import androidx.navigation.compose.composable
+    import com.learn.tutorialcompose.MyViewModel
+    import com.learn.tutorialcompose.Screen
+    import com.learn.tutorialcompose.SwitchScreen
+    import com.learn.tutorialcompose.ui.theme.BgTextField
+    import com.learn.tutorialcompose.ui.theme.BottomNavIconColor
+    import com.learn.tutorialcompose.ui.theme.ColorBox
+    import com.ramcosta.composedestinations.annotation.Destination
+    import com.ramcosta.composedestinations.annotation.RootGraph
+    import com.ramcosta.composedestinations.generated.destinations.CodesScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.FifthScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.FirstScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.FourthScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.SecondScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.SixthScreenDestination
+    import com.ramcosta.composedestinations.generated.destinations.ThirdScreenDestination
+    import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+    import kotlinx.coroutines.CoroutineScope
+    import kotlinx.coroutines.launch
+
+
+    @Destination<RootGraph>
+    @Composable
+    fun BunchOfCodesScreen(
+        navigator: DestinationsNavigator,
+        vm: MyViewModel
+    ) {
+        val snackbarHostState = remember { SnackbarHostState() }
+        val scope: CoroutineScope = rememberCoroutineScope()
+
+        Scaffold(
+            modifier = Modifier.background(Color.DarkGray),
+            snackbarHost = { SnackBarBox(snackbarHostState = snackbarHostState) }
+        ) { padding ->
+            ConstraintLayout(
+                modifier = Modifier
+                    .background(color = Color.White)
+                    .padding()
+            ) {
+                val (
+                    textField,
+                    inputButton,
+                    bunchOfScreens
+                ) = createRefs()
+
+                BasicTextField(
+                    value = vm.textFieldState3.value,
+                    singleLine = true,
+                    onValueChange = { vm.textFieldState3.value = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 30.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(BgTextField)
+                        .padding(start = 12.dp, end = 60.dp, top = 14.dp, bottom = 15.dp)
+                        .constrainAs(textField) {
+                            top.linkTo(parent.top, margin = 50.dp)
+                        },
+                    cursorBrush = SolidColor(Color.Black.copy(alpha = 0.3f)),
+                    textStyle = TextStyle(
+                        fontSize = 16.sp,
+                        color = Color.Gray
+                    ),
+                    decorationBox = { innerTextField ->
+                        if (vm.textFieldState3.value.isEmpty()) {
+                            Text(
+                                text = "Search",
+                                color = Color.Gray.copy(alpha = 0.7f),
+                                fontSize = 16.sp
+                            )
+                        }
+                        innerTextField()
+                    }
+                )
+                Button(
+                    modifier = Modifier
+                        .height(48.dp)
+                        .width(60.dp)
+                        .constrainAs(inputButton) {
+                            top.linkTo(textField.top)
+                            end.linkTo(textField.end, margin = 25.dp)
+                        },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = BottomNavIconColor,
+                        contentColor = Color.White,
+                        disabledContainerColor = BottomNavIconColor,
+                        disabledContentColor = Color.White.copy(alpha = 0.5f)
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    onClick = {
+                        scope.launch {
+                            if (vm.textFieldState.value.isEmpty()) {
+                                snackbarHostState.showSnackbar("the value's empty")
+                            } else {
+                                snackbarHostState.showSnackbar("Please enter the correct screen name")
+                            }
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBackIosNew,
+                        contentDescription = "enter",
+                        tint = Color.White,
+                        modifier = Modifier.scale(-1f, 1f)
+                    )
+                }
+                BoxCodes(
+                    modifier = Modifier.constrainAs(bunchOfScreens) {
+                        top.linkTo(textField.bottom)
+                    },
+                    viewModel = vm,
+                    screens = listOf(
+                        SwitchScreen(
+                            name = "FirstScreen",
+                            screen = {
+                                navigator.navigate(
+                                    CodesScreenDestination(
+                                        FirstScreenDestination.route
+                                    )
+                                )
+                            }
+                        ),
+                        SwitchScreen(
+                            name = "SecondScreen",
+                            screen = {
+                                navigator.navigate(
+                                    CodesScreenDestination(
+                                        SecondScreenDestination.route
+                                    )
+                                )
+                            }
+                        ),
+                        SwitchScreen(
+                            name = "ThirdScreen",
+                            screen = {
+                                navigator.navigate(
+                                    CodesScreenDestination(
+                                        ThirdScreenDestination.route
+                                    )
+                                )
+                            }
+                        ),
+                        SwitchScreen(
+                            name = "FourthScreen",
+                            screen = {
+                                navigator.navigate(
+                                    CodesScreenDestination(
+                                        FourthScreenDestination.route
+                                    )
+                                )
+                            }
+                        ),
+                        SwitchScreen(
+                            name = "FifthScreen",
+                            screen = {
+                                navigator.navigate(
+                                    CodesScreenDestination(
+                                        FifthScreenDestination.route
+                                    )
+                                )
+                            }
+                        ),
+                        SwitchScreen(
+                            name = "SixthScreen",
+                            screen = {
+                                navigator.navigate(
+                                    CodesScreenDestination(
+                                        SixthScreenDestination.route
+                                    )
+                                )
+                            }
+                        )
+                    )
+                )
+            }
+        }
+    }
+
+
+    @Composable
+    fun BoxCodes(
+        modifier: Modifier = Modifier,
+        screens: List<SwitchScreen>,
+        viewModel: MyViewModel
+    ) {
+        LazyColumn(
+            modifier = modifier
+                .background(color = Color.White)
+                .padding(top = 30.dp)
+                .padding(horizontal = 18.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            val textInput = viewModel.textFieldState3.value
+            if (textInput.isNotEmpty()) {
+                screens.forEach {
+                    if (it.name.lowercase().contains(textInput.lowercase().trim())) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .height(70.dp)
+                                    .fillMaxWidth()
+                                    .clip(shape = RoundedCornerShape(16.dp))
+                                    .background(ColorBox)
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null
+                                    ) {
+                                        it.screen()
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = it.name,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
+                }
+            } else {
+                items(screens.size) {
+                    Box(
+                        modifier = Modifier
+                            .height(70.dp)
+                            .fillMaxWidth()
+                            .clip(shape = RoundedCornerShape(16.dp))
+                            .background(ColorBox)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                screens[it].screen()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = screens[it].name,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .background(color = Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        buildAnnotatedString {
+                            append("Created by")
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            ) {
+                                append(" MOH. AKBAR KURNIAWAN")
+                            }
+                        },
+                        color = Color.DarkGray
+                    )
+                }
+            }
+        }
+    }
+""".trimIndent()
+val CodeOfProfileScreen = """
+    package com.learn.tutorialcompose.screens
+
+    import androidx.compose.runtime.Composable
+    import androidx.lifecycle.viewmodel.compose.viewModel
+    import androidx.navigation.NavController
+    import androidx.navigation.NavGraphBuilder
+    import androidx.navigation.compose.composable
+    import com.learn.tutorialcompose.MyViewModel
+    import com.learn.tutorialcompose.Screen
+    import com.ramcosta.composedestinations.annotation.Destination
+    import com.ramcosta.composedestinations.annotation.RootGraph
+    import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+
+
+    @Destination<RootGraph>
+    @Composable
+    fun ProfileScreen(
+        navigator: DestinationsNavigator,
+        vm: MyViewModel
+    ) {
+
+    }
+""".trimIndent()
+val CodeOfFirstScreen = """
 package com.learn.tutorialcompose.screens
 
 import androidx.compose.foundation.background
@@ -156,7 +972,7 @@ fun FirstScreen(
     }
 }
 """
-val CodeSecondScreen = """
+val CodeofSecondScreen = """
 package com.learn.tutorialcompose.screens
 
 import androidx.compose.foundation.Image
@@ -500,7 +1316,7 @@ fun ImageCard2(
     }
 }
 """
-val CodeThirdScreen = """
+val CodeOfThirdScreen = """
     package com.learn.tutorialcompose.screens
 
 import androidx.compose.animation.animateColor
@@ -830,7 +1646,7 @@ fun CircularProgressBar(
         )
     }
 }""".trimIndent()
-val CodeFourthScreen = """
+val CodeOfFourthScreen = """
     package com.learn.tutorialcompose.screens
 
 import androidx.compose.foundation.Canvas
@@ -1049,7 +1865,7 @@ fun Timer(
     }
 }
 """.trimIndent()
-val CodeFifthScreen = """
+val CodeofFifthScreen = """
     package com.learn.tutorialcompose.screens
 
     import androidx.compose.foundation.Image
@@ -1679,7 +2495,7 @@ val CodeFifthScreen = """
         }
     }
 """.trimIndent()
-val CodeSixthScreen = """
+val CodeOfSixthScreen = """
     package com.learn.tutorialcompose.screens
 
     import android.Manifest
@@ -1870,6 +2686,300 @@ val CodeSixthScreen = """
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+""".trimIndent()
+val CodeOfCodesScreen = """
+    package com.learn.tutorialcompose.screens
+
+    import androidx.compose.foundation.clickable
+    import androidx.compose.foundation.interaction.MutableInteractionSource
+    import androidx.compose.foundation.layout.Box
+    import androidx.compose.foundation.layout.fillMaxSize
+    import androidx.compose.foundation.layout.fillMaxWidth
+    import androidx.compose.foundation.layout.height
+    import androidx.compose.foundation.layout.padding
+    import androidx.compose.foundation.lazy.LazyColumn
+    import androidx.compose.material.icons.Icons
+    import androidx.compose.material.icons.filled.ArrowBackIosNew
+    import androidx.compose.material3.Icon
+    import androidx.compose.material3.Text
+    import androidx.compose.runtime.Composable
+    import androidx.compose.runtime.remember
+    import androidx.compose.ui.Alignment
+    import androidx.compose.ui.Modifier
+    import androidx.compose.ui.unit.dp
+    import androidx.compose.ui.unit.sp
+    import androidx.lifecycle.viewmodel.compose.viewModel
+    import androidx.navigation.NavController
+    import androidx.navigation.NavGraphBuilder
+    import androidx.navigation.NavType
+    import androidx.navigation.compose.composable
+    import androidx.navigation.navArgument
+    import com.learn.tutorialcompose.MyViewModel
+    import com.learn.tutorialcompose.Screen
+    import com.learn.tutorialcompose.ui.theme.BgGray
+    import com.ramcosta.composedestinations.annotation.Destination
+    import com.ramcosta.composedestinations.annotation.RootGraph
+    import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+
+    @Destination<RootGraph>
+    @Composable
+    fun CodesScreen(
+        navigator: DestinationsNavigator,
+        viewModel: MyViewModel,
+        screenName: String
+    ) {
+        val codeSnippet = viewModel.codeMap[screenName] ?: "Code not found for ${'$'}{screenName}"
+
+        LazyColumn(modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 40.dp)) {
+            item {
+                Box(
+                    contentAlignment = Alignment.CenterStart,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(80.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBackIosNew,
+                        contentDescription = "back to home screen",
+                        modifier = Modifier
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                navigator.popBackStack()
+                            }
+                            .padding(horizontal = 10.dp)
+                    )
+                }
+                Text(
+                    text = codeSnippet,
+                    color = BgGray,
+                    fontSize = 12.sp
+                )
+            }
+        }
+    }
+""".trimIndent()
+val CodeOfDetailScreen = """
+    package com.learn.tutorialcompose.screens
+
+    import androidx.compose.foundation.clickable
+    import androidx.compose.foundation.interaction.MutableInteractionSource
+    import androidx.compose.foundation.layout.Box
+    import androidx.compose.foundation.layout.Column
+    import androidx.compose.foundation.layout.fillMaxSize
+    import androidx.compose.foundation.layout.fillMaxWidth
+    import androidx.compose.foundation.layout.height
+    import androidx.compose.foundation.layout.padding
+    import androidx.compose.material.icons.Icons
+    import androidx.compose.material.icons.filled.ArrowBackIosNew
+    import androidx.compose.material3.Icon
+    import androidx.compose.material3.Text
+    import androidx.compose.runtime.Composable
+    import androidx.compose.runtime.remember
+    import androidx.compose.ui.Alignment
+    import androidx.compose.ui.Modifier
+    import androidx.compose.ui.unit.dp
+    import androidx.navigation.NavController
+    import com.ramcosta.composedestinations.annotation.Destination
+    import com.ramcosta.composedestinations.annotation.RootGraph
+    import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+
+
+    @Destination<RootGraph>
+    @Composable
+    fun DetailScreen(
+        navigator: DestinationsNavigator,
+        name: String?
+    ) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 40.dp)) {
+            Box(
+                contentAlignment = Alignment.CenterStart,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBackIosNew,
+                    contentDescription = "back to home screen",
+                    modifier = Modifier
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            navigator.popBackStack()
+                        }
+                        .padding(horizontal = 10.dp)
+                )
+            }
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Hello, ${'$'}name")
+            }
+        }
+    }
+""".trimIndent()
+val CodeOfBottomNavbar = """
+    package com.learn.tutorialcompose
+
+    import androidx.compose.foundation.layout.Column
+    import androidx.compose.foundation.layout.fillMaxWidth
+    import androidx.compose.foundation.layout.height
+    import androidx.compose.foundation.shape.RoundedCornerShape
+    import androidx.compose.material3.Icon
+    import androidx.compose.material3.NavigationBar
+    import androidx.compose.material3.NavigationBarItem
+    import androidx.compose.material3.NavigationBarItemDefaults
+    import androidx.compose.material3.Text
+    import androidx.compose.runtime.Composable
+    import androidx.compose.runtime.getValue
+    import androidx.compose.ui.Alignment
+    import androidx.compose.ui.Modifier
+    import androidx.compose.ui.draw.clip
+    import androidx.compose.ui.graphics.Color
+    import androidx.compose.ui.res.painterResource
+    import androidx.compose.ui.unit.dp
+    import androidx.navigation.NavController
+    import androidx.navigation.compose.currentBackStackEntryAsState
+    import com.learn.tutorialcompose.ui.theme.BottomNavColor
+    import com.learn.tutorialcompose.ui.theme.BottomNavIconColor
+
+
+    @Composable fun BottomNavBar(
+        items: List<BottomNavItem>,
+        navController: NavController,
+        modifier: Modifier = Modifier,
+        onItemCLick: (BottomNavItem) -> Unit
+    ) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+        NavigationBar(
+            containerColor = BottomNavColor,
+            contentColor = Color.White,
+            modifier = modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .height(100.dp)
+        ) {
+            items.forEach {
+                val selected = it.destination.route == currentRoute
+                
+                NavigationBarItem(
+                    selected = selected,
+                    onClick = { onItemCLick(it) },
+                    icon = {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                painter = painterResource(id = it.icon),
+                                contentDescription = it.label
+                            )
+                        }
+                    },
+                    label = { if(selected) Text(it.label) },
+                    colors = NavigationBarItemDefaults.colors(
+                        indicatorColor = Color.Transparent,
+                        selectedIconColor = BottomNavIconColor,
+                        unselectedIconColor = Color.White,
+                        selectedTextColor = BottomNavIconColor,
+                        unselectedTextColor = Color.White
+                    )
+                )
+            }
+        }
+    }
+""".trimIndent()
+val CodeOfCustomTypeData = """
+    package com.learn.tutorialcompose
+
+    import androidx.compose.ui.graphics.painter.Painter
+    import androidx.navigation.NavDestination
+    import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
+
+    data class IconWithText(
+        val icon: Int,
+        val text: String
+    )
+
+    data class BottomNavItem(
+        val label: String,
+        val icon: Int,
+        val destination: DirectionDestinationSpec
+    )
+
+    data class SwitchScreen(
+        val name: String,
+        val screen: () -> Unit
+    )
+
+    data class ListItem(
+        val name: String,
+        val isSelected: Boolean
+    )
+    data class SwitchScreenCode(
+        val name: String,
+        val screen: () -> Unit,
+        val code: String
+    )
+""".trimIndent()
+val CodeOfResponse = """
+    package com.learn.tutorialcompose
+
+    import android.os.Parcelable
+    import kotlinx.parcelize.Parcelize
+    import com.google.gson.annotations.SerializedName
+
+    @Parcelize
+    data class Response(
+    	@field:SerializedName("cards")
+    	val cards: List<CardsItem?>? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class CardsItem(
+
+    	@field:SerializedName("image_url")
+    	val imageUrl: String? = null,
+
+    	@field:SerializedName("description")
+    	val description: String? = null,
+
+    	@field:SerializedName("id")
+    	val id: String? = null,
+
+    	@field:SerializedName("title")
+    	val title: String? = null
+    ) : Parcelable
+""".trimIndent()
+val CodeOfScreen = """
+    package com.learn.tutorialcompose
+
+    sealed class Screen(val route: String) {
+        object HomeScreen: Screen("home_screen")
+        object SecondScreen: Screen("second_screen")
+        object ThirdScreen: Screen("third_screen")
+        object FourthScreen: Screen("fourth_screen")
+        object FifthScreen: Screen("fifth_screen")
+        object SixthScreen: Screen("sixth_screen")
+        object FirstScreen: Screen("first_screen")
+        object ProfileScreen: Screen("profile_screen")
+        object BunchOfCodesScreen: Screen("bunch_of_codes_screen")
+        object DetailScreen: Screen("detail_screen")
+        object CodesScreen: Screen("codes_screen")
+        fun withArgs(vararg args: String): String {
+            return buildString {
+                append(route)
+                args.forEach { arg ->
+                    append("/${'$'}arg")
                 }
             }
         }

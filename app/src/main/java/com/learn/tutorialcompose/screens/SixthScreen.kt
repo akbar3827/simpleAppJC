@@ -41,23 +41,16 @@ import com.google.accompanist.permissions.shouldShowRationale
 import com.learn.tutorialcompose.ListItem
 import com.learn.tutorialcompose.MyViewModel
 import com.learn.tutorialcompose.Screen
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-fun NavGraphBuilder.sixthNav(navController: NavController, vm: MyViewModel) {
-    composable(Screen.SixthScreen.route) {
-        SixthScreen(
-            onNavigateToMainScreen = {
-                navController.popBackStack()
-            },
-            vm = vm
-        )
-    }
-}
 
+@Destination<RootGraph>
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SixthScreen(
-    onNavigateToMainScreen: () -> Unit,
-    vm: MyViewModel
+    navigator: DestinationsNavigator
 ) {
     var items by remember {
         mutableStateOf(
@@ -103,7 +96,7 @@ fun SixthScreen(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ) {
-                    onNavigateToMainScreen()
+                    navigator.popBackStack()
                 }.padding(horizontal = 10.dp)
             )
         }

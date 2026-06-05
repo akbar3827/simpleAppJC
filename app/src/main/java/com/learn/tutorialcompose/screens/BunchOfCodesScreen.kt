@@ -40,33 +40,38 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.learn.tutorialcompose.MyViewModel
 import com.learn.tutorialcompose.Screen
+import com.learn.tutorialcompose.StringScreen
 import com.learn.tutorialcompose.SwitchScreen
 import com.learn.tutorialcompose.ui.theme.BgTextField
 import com.learn.tutorialcompose.ui.theme.BottomNavIconColor
 import com.learn.tutorialcompose.ui.theme.ColorBox
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.BunchOfCodesScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.CodesScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.FifthScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.FirstScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.FourthScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SecondScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SixthScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.ThirdScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-fun NavGraphBuilder.bunchOfCodesScreen(
-    navController: NavController,
-    vm: MyViewModel
-) {
-    composable(Screen.BunchOfCodesScreen.route) {
-        BunchOfCodesScreen(
-            navController = navController,
-            vm = vm
-        )
-    }
-}
 
+@Destination<RootGraph>
 @Composable
 fun BunchOfCodesScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     vm: MyViewModel
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -153,56 +158,18 @@ fun BunchOfCodesScreen(
                     top.linkTo(textField.bottom)
                 },
                 viewModel = vm,
-                screens = listOf(
+                screens = vm.CodeList.map {
                     SwitchScreen(
-                        name = "FirstScreen",
+                        name = it.name,
                         screen = {
-                            navController.navigate(
-                                Screen.CodesScreen.withArgs(Screen.FirstScreen.route)
-                            )
-                        }
-                    ),
-                    SwitchScreen(
-                        name = "SecondScreen",
-                        screen = {
-                            navController.navigate(
-                                Screen.CodesScreen.withArgs(Screen.SecondScreen.route)
-                            )
-                        }
-                    ),
-                    SwitchScreen(
-                        name = "ThirdScreen",
-                        screen = {
-                            navController.navigate(
-                                Screen.CodesScreen.withArgs(Screen.ThirdScreen.route)
-                            )
-                        }
-                    ),
-                    SwitchScreen(
-                        name = "FourthScreen",
-                        screen = {
-                            navController.navigate(
-                                Screen.CodesScreen.withArgs(Screen.FourthScreen.route)
-                            )
-                        }
-                    ),
-                    SwitchScreen(
-                        name = "FifthScreen",
-                        screen = {
-                            navController.navigate(
-                                Screen.CodesScreen.withArgs(Screen.FifthScreen.route)
-                            )
-                        }
-                    ),
-                    SwitchScreen(
-                        name = "SixthScreen",
-                        screen = {
-                            navController.navigate(
-                                Screen.CodesScreen.withArgs(Screen.SixthScreen.route)
+                            navigator.navigate(
+                                CodesScreenDestination(
+                                    it.key
+                                )
                             )
                         }
                     )
-                )
+                }
             )
         }
     }
@@ -257,7 +224,10 @@ fun BoxCodes(
                         .fillMaxWidth()
                         .clip(shape = RoundedCornerShape(16.dp))
                         .background(ColorBox)
-                        .clickable {
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
                             screens[it].screen()
                         },
                     contentAlignment = Alignment.Center

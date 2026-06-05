@@ -1,26 +1,19 @@
 package com.learn.tutorialcompose.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.style.Style
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -40,7 +33,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -49,33 +41,28 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
 import com.learn.tutorialcompose.MyViewModel
-import com.learn.tutorialcompose.Screen
 import com.learn.tutorialcompose.SwitchScreen
-import com.learn.tutorialcompose.ui.theme.BgGray
 import com.learn.tutorialcompose.ui.theme.BgTextField
-import com.learn.tutorialcompose.ui.theme.BottomNavColor
 import com.learn.tutorialcompose.ui.theme.BottomNavIconColor
-import com.learn.tutorialcompose.ui.theme.ButtonBlue
 import com.learn.tutorialcompose.ui.theme.ColorBox
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.FifthScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.FirstScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.FourthScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SecondScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SixthScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.ThirdScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-fun NavGraphBuilder.homeScreen(navController: NavController, vm: MyViewModel) {
-    composable(Screen.HomeScreen.route) {
-        HomeScreen(
-            navController = navController,
-            vm = vm
-        )
-    }
-}
 
+@Destination<RootGraph>(start = true)
 @Composable
 fun HomeScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     vm: MyViewModel
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -165,27 +152,27 @@ fun HomeScreen(
                 screens = listOf(
                     SwitchScreen(
                         name = "FirstScreen",
-                        screen = { navController.navigate(Screen.FirstScreen.route) }
+                        screen = { navigator.navigate(FirstScreenDestination) }
                     ),
                     SwitchScreen(
                         name = "SecondScreen",
-                        screen = { navController.navigate(Screen.SecondScreen.route) }
+                        screen = { navigator.navigate(SecondScreenDestination) }
                     ),
                     SwitchScreen(
                         name = "ThirdScreen",
-                        screen = { navController.navigate(Screen.ThirdScreen.route) }
+                        screen = { navigator.navigate(ThirdScreenDestination) }
                     ),
                     SwitchScreen(
                         name = "FourthScreen",
-                        screen = { navController.navigate(Screen.FourthScreen.route) }
+                        screen = { navigator.navigate(FourthScreenDestination) }
                     ),
                     SwitchScreen(
                         name = "FifthScreen",
-                        screen = { navController.navigate(Screen.FifthScreen.route) }
+                        screen = { navigator.navigate(FifthScreenDestination) }
                     ),
                     SwitchScreen(
                         name = "SixthScreen",
-                        screen = { navController.navigate(Screen.SixthScreen.route) }
+                        screen = { navigator.navigate(SixthScreenDestination) }
                     )
                 )
             )

@@ -1,88 +1,69 @@
 package com.learn.tutorialcompose
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.learn.tutorialcompose.screens.BunchOfCodesScreen
-import com.learn.tutorialcompose.screens.ProfileScreen
-import com.learn.tutorialcompose.screens.bunchOfCodesScreen
-import com.learn.tutorialcompose.screens.codesScreen
-import com.learn.tutorialcompose.screens.detailScreen
-import com.learn.tutorialcompose.screens.fifthNav
-import com.learn.tutorialcompose.screens.firstNav
-import com.learn.tutorialcompose.screens.fourthNav
-import com.learn.tutorialcompose.screens.homeScreen
-import com.learn.tutorialcompose.screens.secondNav
-import com.learn.tutorialcompose.screens.sixthNav
-import com.learn.tutorialcompose.screens.thirdNav
+import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.BunchOfCodesScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
+import com.ramcosta.composedestinations.navigation.dependency
 
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
-    val vm = viewModel<MyViewModel>()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-    val bottomBarRoutes = listOf(
-        Screen.HomeScreen.route,
-        Screen.BunchOfCodesScreen.route,
-        Screen.ProfileScreen.route
-    )
-    val showBottomBar = currentRoute in bottomBarRoutes
+    val vm: MyViewModel = viewModel()
+    // using currentBackStackEntryAsState() because i wanna change the UI too
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = currentBackStackEntry?.destination?.route
 
     Scaffold(
         bottomBar = {
-            if (showBottomBar) {
+            if (currentDestination in vm.navScreenIsVisible) {
                 BottomNavBar(
+                    navController = navController,
                     items = listOf(
                         BottomNavItem(
-                            name = "Home",
-                            route = Screen.HomeScreen.route,
-                            icon = R.drawable.ic_gemini
+                            label = "home",
+                            icon = R.drawable.ic_gemini,
+                            destination = HomeScreenDestination
                         ),
                         BottomNavItem(
-                            name = "Codes",
-                            route = Screen.BunchOfCodesScreen.route,
-                            icon = R.drawable.ic_codes
+                            label = "code",
+                            icon = R.drawable.ic_gemini,
+                            destination = BunchOfCodesScreenDestination
                         ),
                         BottomNavItem(
-                            name = "Profile",
-                            route = Screen.ProfileScreen.route,
-                            icon = R.drawable.ic_profile
+                            label = "profile",
+                            icon = R.drawable.ic_gemini,
+                            destination = ProfileScreenDestination
                         )
-                    ),
-                    navController = navController,
-                    onItemCLick = {
-                        navController.navigate(it.route)
+                    )
+                ) { item ->
+                    navController.navigate(item.destination.route) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
                     }
-                )
+                }
             }
-        },
-    ) { padding ->
-        NavHost(
-            navController = navController,
-            startDestination = Screen.HomeScreen.route,
-        ) {
-            homeScreen(navController, vm)
-            bunchOfCodesScreen(navController, vm)
-            ProfileScreen(navController, vm)
-            firstNav(navController, vm)
-            secondNav(navController, vm)
-            thirdNav(navController, vm)
-            fourthNav(navController, vm)
-            fifthNav(navController, vm)
-            sixthNav(navController, vm)
-            detailScreen(navController, vm.textFieldState2.value)
-            codesScreen(navController, vm)
         }
+    ) { padding ->
+        DestinationsNavHost(
+            navGraph = NavGraphs.root,
+            navController = navController,
+            modifier = Modifier.padding(padding),
+            dependenciesContainerBuilder = {
+                dependency(vm)
+            }
+        )
     }
 }
-

@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -26,28 +27,14 @@ import androidx.navigation.navArgument
 import com.learn.tutorialcompose.MyViewModel
 import com.learn.tutorialcompose.Screen
 import com.learn.tutorialcompose.ui.theme.BgGray
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-fun NavGraphBuilder.codesScreen(navController: NavController, viewModel: MyViewModel) {
-    composable(
-        route = Screen.CodesScreen.route + "/{name}",
-        arguments = listOf(
-            navArgument(name = "name", builder = {
-                type = NavType.StringType
-            })
-        )
-    ) { backStackEntry ->
-        val screenName =
-        CodesScreen(
-            navController = navController,
-            viewModel = viewModel,
-            screenName = backStackEntry.arguments?.getString("name") ?: ""
-        )
-    }
-}
-
+@Destination<RootGraph>
 @Composable
 fun CodesScreen(
-    navController: NavController,
+    navigator: DestinationsNavigator,
     viewModel: MyViewModel,
     screenName: String
 ) {
@@ -71,7 +58,7 @@ fun CodesScreen(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ) {
-                            navController.popBackStack()
+                            navigator.popBackStack()
                         }
                         .padding(horizontal = 10.dp)
                 )

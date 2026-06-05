@@ -62,23 +62,18 @@ import com.learn.tutorialcompose.Screen
 import com.learn.tutorialcompose.ui.theme.colorlink
 import com.learn.tutorialcompose.ui.theme.inactiveColor
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.learn.tutorialcompose.IconWithText
 import com.learn.tutorialcompose.ui.theme.BgGray
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-fun NavGraphBuilder.fifthNav(navController: NavController, vm: MyViewModel) {
-    composable(Screen.FifthScreen.route) {
-        FifthScreen(
-            onNavigateToMainScreen = {
-                navController.popBackStack()
-            },
-            vm = vm
-        )
-    }
-}
 
+@Destination<RootGraph>
 @Composable
 fun FifthScreen(
-    onNavigateToMainScreen: () -> Unit,
+    navigator: DestinationsNavigator,
     vm: MyViewModel
 ) {
     var selectedTabIndex by remember {
@@ -93,7 +88,7 @@ fun FifthScreen(
         TopBar(
             "4kbrr.io",
             modifier = Modifier,
-            onNavigateToMainScreen
+            { navigator.popBackStack() }
         )
         Spacer(Modifier.height(40.dp))
         ProfileSection(
