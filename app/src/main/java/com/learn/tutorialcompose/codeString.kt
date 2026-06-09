@@ -116,81 +116,146 @@ val CodeofMyApp = """
         }
     }
 """.trimIndent()
-val CodeOfMyViewModel = """
-    package com.learn.tutorialcompose
+val CodeOfMyViewModel = """package com.learn.tutorialcompose
 
-    import android.content.Context
-    import androidx.compose.runtime.MutableState
-    import androidx.compose.runtime.getValue
-    import androidx.compose.runtime.mutableStateOf
-    import androidx.compose.runtime.setValue
-    import androidx.lifecycle.ViewModel
-    import com.google.gson.Gson
-    import com.ramcosta.composedestinations.generated.destinations.BunchOfCodesScreenDestination
-    import com.ramcosta.composedestinations.generated.destinations.FifthScreenDestination
-    import com.ramcosta.composedestinations.generated.destinations.FirstScreenDestination
-    import com.ramcosta.composedestinations.generated.destinations.FourthScreenDestination
-    import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
-    import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
-    import com.ramcosta.composedestinations.generated.destinations.SecondScreenDestination
-    import com.ramcosta.composedestinations.generated.destinations.SixthScreenDestination
-    import com.ramcosta.composedestinations.generated.destinations.ThirdScreenDestination
+import android.content.Context
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
+import com.ramcosta.composedestinations.generated.destinations.BunchOfCodesScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.FifthScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.FirstScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.FourthScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SecondScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SeventhScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SixthScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.ThirdScreenDestination
+import kotlinx.coroutines.launch
 
-    class MyViewModel : ViewModel() {
-        var textFieldState:MutableState<String> = mutableStateOf("")
-        var textFieldState2:MutableState<String> = mutableStateOf("")
-        var textFieldState3:MutableState<String> = mutableStateOf("")
-        var responState: Response? by mutableStateOf(null)
+class MyViewModel : ViewModel() {
+    var textFieldState:MutableState<String> = mutableStateOf("")
+    var textFieldState2:MutableState<String> = mutableStateOf("")
+    var textFieldState3:MutableState<String> = mutableStateOf("")
+    var responState: Response? by mutableStateOf(null)
+    var state by mutableStateOf(ScreenState())
+    private val repository = Repository()
 
-        val codeMap:Map<String,String> = mapOf(
-            "MainActivity" to CodeOfMainActivity,
-            "MyApp" to CodeofMyApp,
-            "ViewModel" to CodeOfMyViewModel,
-            "MainScreen" to CodeOfMainScreen,
-            "BunchOfScreen" to CodeOfBunchOfCodesScreen,
-            "ProfileScreen" to CodeOfProfileScreen,
-            FirstScreenDestination.route to CodeOfFirstScreen,
-            SecondScreenDestination.route to CodeofSecondScreen,
-            ThirdScreenDestination.route to CodeOfThirdScreen,
-            FourthScreenDestination.route to CodeOfFourthScreen,
-            FifthScreenDestination.route to CodeofFifthScreen,
-            SixthScreenDestination.route to CodeOfSixthScreen,
-            "CodesScreen" to CodeOfCodesScreen,
-            "CodeOfDetailScreen" to CodeOfDetailScreen,
-            "BottomNavBar" to CodeOfBottomNavbar,
-            "CustomTypeData" to CodeOfCustomTypeData,
-            "Respons" to CodeOfResponse,
-            "Screen" to CodeOfScreen
-        )
-        val navScreenIsVisible:List<String> = listOf(
-            HomeScreenDestination.route,
-            BunchOfCodesScreenDestination.route,
-            ProfileScreenDestination.route
-        )
-
-        fun loadData(context: Context, jsonFile: String) {
-            val result = loadRespon(context)
-            responState = result
+    val paginator = Defaultpaginator(
+        initialKey = state.page,
+        onLoadUpdated = {
+            state = state.copy(isLoading = it)
+        },
+        onRequest = {nextKey ->
+            repository.getItems(page = nextKey, pageSize = 20) // func repo.
+        },
+        getNextKey = {
+            state.page + 1
+        },
+        onError = {
+            state = state.copy(error = it?.localizedMessage)
+        },
+        onSuccess = { items, newKey ->
+            state = state.copy(
+                items = state.items + items,
+                page = newKey,
+                endReached = items.isEmpty()
+            )
+        }
+    )
+    init {
+        loadNextItems()
+    }
+    fun loadNextItems() {
+        viewModelScope.launch {
+            paginator.loadNextitems()
         }
     }
 
+    val codeMap:Map<String,String> = mapOf(
+        "MainActivity" to CodeOfMainActivity,
+        "MyApp" to CodeofMyApp,
+        "ViewModel" to CodeOfMyViewModel,
+        HomeScreenDestination.route to CodeOfMainScreen,
+        BunchOfCodesScreenDestination.route to CodeOfBunchOfCodesScreen,
+        ProfileScreenDestination.route to CodeOfProfileScreen,
+        FirstScreenDestination.route to CodeOfFirstScreen,
+        SecondScreenDestination.route to CodeofSecondScreen,
+        ThirdScreenDestination.route to CodeOfThirdScreen,
+        FourthScreenDestination.route to CodeOfFourthScreen,
+        FifthScreenDestination.route to CodeofFifthScreen,
+        SixthScreenDestination.route to CodeOfSixthScreen,
+        SeventhScreenDestination.route to CodeOfSeventhScreen,
+        "CodesScreen" to CodeOfCodesScreen,
+        "CodeOfDetailScreen" to CodeOfDetailScreen,
+        "BottomNavBar" to CodeOfBottomNavbar,
+        "CustomTypeData" to CodeOfCustomTypeData,
+        "Respons" to CodeOfResponse,
+        "Screen" to CodeOfScreen,
+        "rememberWindowInfo" to CodeOfrememberWindowInfo,
+        "paginator" to CodeOfPaginator,
+        "defaultPaginator" to CodeOfDefaultPaginator,
+        "repository" to CodeOfRepository
+    )
+    val CodeList = listOf(
+        StringScreen(name = "MainActivity", key = "MainActivity"),
+        StringScreen(name = "MyApp", key = "MyApp"),
+        StringScreen(name = "ViewModel", key = "ViewModel"),
+        StringScreen(name = "HomeScreen", key = HomeScreenDestination.route),
+        StringScreen(name = "BunchOfCodes", key = BunchOfCodesScreenDestination.route),
+        StringScreen(name = "ProfileScreen", key = ProfileScreenDestination.route),
+        StringScreen(name = "FirstScreen", key = FirstScreenDestination.route),
+        StringScreen(name = "SecondScreen", key = SecondScreenDestination.route),
+        StringScreen(name = "ThirdScreen", key = ThirdScreenDestination.route),
+        StringScreen(name = "FourthScreen", key = FourthScreenDestination.route),
+        StringScreen(name = "FifthScreen", key = FifthScreenDestination.route),
+        StringScreen(name = "SixthScreen", key = SixthScreenDestination.route),
+        StringScreen(name = "SeventhScreen", key = SeventhScreenDestination.route),
+        StringScreen(name = "CodesScreen", key = "CodesScreen"),
+        StringScreen(name = "DetailScreen", key = "CodeOfDetailScreen"),
+        StringScreen(name = "BottomNavBar", key = "BottomNavBar"),
+        StringScreen(name = "CustomTypeData", key = "CustomTypeData"),
+        StringScreen(name = "Respons", key = "Respons"),
+        StringScreen(name = "Screen", key = "Screen"),
+        StringScreen(name = "rememberWindowInfo", key = "rememberWindowInfo"),
+        StringScreen(name = "Paginator", key = "paginator"),
+        StringScreen(name = "DefaultPaginator", key = "defaultPaginator"),
+        StringScreen(name = "Repository", key = "repository")
+    )
+    val navScreenIsVisible:List<String> = listOf(
+        HomeScreenDestination.route,
+        BunchOfCodesScreenDestination.route,
+        ProfileScreenDestination.route
+    )
 
-    fun loadRespon(context: Context): Response? {
-        return try {
-            val jsonString: String = readJson(context)
-
-            Gson().fromJson(jsonString, Response::class.java)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
+    fun loadData(context: Context, jsonFile: String) {
+        val result = loadRespon(context)
+        responState = result
     }
+}
 
-    fun readJson(context: Context): String {
-        return context.assets.open("card.json")
-            .bufferedReader()
-            .use { it.readText() }
+
+fun loadRespon(context: Context): Response? {
+    return try {
+        val jsonString: String = readJson(context)
+
+        Gson().fromJson(jsonString, Response::class.java)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
+}
+
+fun readJson(context: Context): String {
+    return context.assets.open("card.json")
+        .bufferedReader()
+        .use { it.readText() }
+}
 """.trimIndent()
 val CodeOfMainScreen = """
     package com.learn.tutorialcompose.screens
@@ -2691,6 +2756,174 @@ val CodeOfSixthScreen = """
         }
     }
 """.trimIndent()
+val CodeOfSeventhScreen = """
+    package com.learn.tutorialcompose.screens
+
+    import androidx.compose.foundation.clickable
+    import androidx.compose.foundation.interaction.MutableInteractionSource
+    import androidx.compose.foundation.layout.Arrangement
+    import androidx.compose.foundation.layout.Box
+    import androidx.compose.foundation.layout.Column
+    import androidx.compose.foundation.layout.Row
+    import androidx.compose.foundation.layout.Spacer
+    import androidx.compose.foundation.layout.fillMaxSize
+    import androidx.compose.foundation.layout.fillMaxWidth
+    import androidx.compose.foundation.layout.height
+    import androidx.compose.foundation.layout.padding
+    import androidx.compose.foundation.layout.width
+    import androidx.compose.foundation.lazy.LazyColumn
+    import androidx.compose.material.icons.Icons
+    import androidx.compose.material.icons.filled.ArrowBackIosNew
+    import androidx.compose.material3.CircularProgressIndicator
+    import androidx.compose.material3.Icon
+    import androidx.compose.material3.Text
+    import androidx.compose.runtime.Composable
+    import androidx.compose.runtime.remember
+    import androidx.compose.ui.Alignment
+    import androidx.compose.ui.Modifier
+    import androidx.compose.ui.graphics.Color
+    import androidx.compose.ui.unit.dp
+    import androidx.compose.ui.unit.sp
+    import androidx.lifecycle.viewmodel.compose.viewModel
+    import com.learn.tutorialcompose.MyViewModel
+    import com.ramcosta.composedestinations.annotation.Destination
+    import com.ramcosta.composedestinations.annotation.RootGraph
+    import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+
+    @Destination<RootGraph>
+    @Composable
+    fun SeventhScreen(
+        navigator: DestinationsNavigator
+    ) {
+        val vm = viewModel<MyViewModel>()
+        LazyColumn(Modifier.fillMaxSize()) {
+            item {
+                Box(
+                    contentAlignment = Alignment.CenterStart,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(70.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBackIosNew,
+                        contentDescription = "back to home screen",
+                        modifier = Modifier
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                navigator.popBackStack()
+                            }
+                            .padding(horizontal = 10.dp)
+                    )
+                }
+            }
+            items(vm.state.items.size) { i ->
+                val item = vm.state.items[i]
+                if (i >= vm.state.items.size - 1 && !vm.state.isLoading && !vm.state.endReached) {
+                    vm.loadNextItems()
+                }
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = item.title,
+                        fontSize = 20.sp,
+                        color = Color.Black
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(text = item.description)
+                }
+            }
+            item {
+                if(vm.state.isLoading) {
+                    Row(Modifier.fillMaxWidth().padding(8.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically) {
+                        CircularProgressIndicator()
+                        if (vm.paginator.isMakingRequest) {
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = "is making request.."
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+""".trimIndent()
+val CodeOfPaginator = """
+    package com.learn.tutorialcompose
+
+    interface Paginator<Key, Item> {
+        suspend fun loadNextitems()
+    //    fun reset()
+    }
+""".trimIndent()
+val CodeOfDefaultPaginator = """
+    package com.learn.tutorialcompose
+
+    class Defaultpaginator<Key, Item>(
+        private val initialKey: Key,
+        private val onLoadUpdated: (Boolean) -> Unit,
+        private val onRequest: suspend (nextKey: Key) -> Result<List<Item>>,
+        private val getNextKey: () -> Key,
+        private val onError: suspend (Throwable?) -> Unit,
+        private val onSuccess: suspend (items: List<Item>, newKey: Key) -> Unit
+    ) : Paginator<Key, Item> {
+        private var currentKey = initialKey
+        var isMakingRequest = false
+        override suspend fun loadNextitems() {
+            if (isMakingRequest) {
+                return
+            }
+            isMakingRequest = true
+            onLoadUpdated(true)
+            val result = onRequest(currentKey)
+            isMakingRequest = false
+            val items = result.getOrElse(
+                onFailure = { throwable ->
+                    onError(throwable)
+                    onLoadUpdated(false)
+                    return
+                })
+            currentKey = getNextKey()
+            onSuccess(items, currentKey)
+            onLoadUpdated(false)
+        }
+
+    //    override fun reset() {
+    //        currentKey = initialKey
+    //    }
+    }
+""".trimIndent()
+val CodeOfRepository = """
+    package com.learn.tutorialcompose
+
+    import kotlinx.coroutines.delay
+
+    class Repository {
+        private val remoteDataResource = (1..100).map {
+            ListItem2(
+                title = "Item ${'$'}it" ?: "null",
+                description = "Description ${'$'}it" ?: "null"
+            )
+        }
+
+        suspend fun getItems(page: Int, pageSize: Int): Result<List<ListItem2>> {
+            delay(1500)
+            val startingIndex = page * pageSize
+            return if(startingIndex + pageSize <= remoteDataResource.size) {
+                Result.success(
+                    remoteDataResource.slice(startingIndex until startingIndex + pageSize)
+                )
+            } else Result.success(emptyList())
+        }
+    }
+""".trimIndent()
 val CodeOfCodesScreen = """
     package com.learn.tutorialcompose.screens
 
@@ -2832,104 +3065,119 @@ val CodeOfDetailScreen = """
 val CodeOfBottomNavbar = """
     package com.learn.tutorialcompose
 
-    import androidx.compose.foundation.layout.Column
-    import androidx.compose.foundation.layout.fillMaxWidth
-    import androidx.compose.foundation.layout.height
-    import androidx.compose.foundation.shape.RoundedCornerShape
-    import androidx.compose.material3.Icon
-    import androidx.compose.material3.NavigationBar
-    import androidx.compose.material3.NavigationBarItem
-    import androidx.compose.material3.NavigationBarItemDefaults
-    import androidx.compose.material3.Text
-    import androidx.compose.runtime.Composable
-    import androidx.compose.runtime.getValue
-    import androidx.compose.ui.Alignment
-    import androidx.compose.ui.Modifier
-    import androidx.compose.ui.draw.clip
-    import androidx.compose.ui.graphics.Color
-    import androidx.compose.ui.res.painterResource
-    import androidx.compose.ui.unit.dp
-    import androidx.navigation.NavController
-    import androidx.navigation.compose.currentBackStackEntryAsState
-    import com.learn.tutorialcompose.ui.theme.BottomNavColor
-    import com.learn.tutorialcompose.ui.theme.BottomNavIconColor
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.learn.tutorialcompose.ui.theme.BottomNavColor
+import com.learn.tutorialcompose.ui.theme.BottomNavIconColor
 
 
-    @Composable fun BottomNavBar(
-        items: List<BottomNavItem>,
-        navController: NavController,
-        modifier: Modifier = Modifier,
-        onItemCLick: (BottomNavItem) -> Unit
+@Composable
+fun BottomNavBar(
+    items: List<BottomNavItem>,
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    onItemCLick: (BottomNavItem) -> Unit
+) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    NavigationBar(
+        containerColor = BottomNavColor,
+        contentColor = Color.White,
+        windowInsets = WindowInsets(0, 0, 0, 0),
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .height(80.dp)
     ) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
-        NavigationBar(
-            containerColor = BottomNavColor,
-            contentColor = Color.White,
-            modifier = modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .height(100.dp)
-        ) {
-            items.forEach {
-                val selected = it.destination.route == currentRoute
-                
-                NavigationBarItem(
-                    selected = selected,
-                    onClick = { onItemCLick(it) },
-                    icon = {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                painter = painterResource(id = it.icon),
-                                contentDescription = it.label
-                            )
-                        }
-                    },
-                    label = { if(selected) Text(it.label) },
-                    colors = NavigationBarItemDefaults.colors(
-                        indicatorColor = Color.Transparent,
-                        selectedIconColor = BottomNavIconColor,
-                        unselectedIconColor = Color.White,
-                        selectedTextColor = BottomNavIconColor,
-                        unselectedTextColor = Color.White
+        items.forEach {
+            val selected = it.destination.route == currentRoute
+            NavigationBarItem(
+                selected = selected,
+                onClick = { onItemCLick(it) },
+                alwaysShowLabel = false,
+                icon = {
+                    Icon(
+                        painter = painterResource(id = it.icon),
+                        contentDescription = it.label
                     )
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = Color.Transparent,
+                    selectedIconColor = BottomNavIconColor,
+                    unselectedIconColor = Color.White,
+                    selectedTextColor = BottomNavIconColor,
+                    unselectedTextColor = Color.White
                 )
-            }
+            )
         }
     }
+}
 """.trimIndent()
 val CodeOfCustomTypeData = """
     package com.learn.tutorialcompose
 
-    import androidx.compose.ui.graphics.painter.Painter
-    import androidx.navigation.NavDestination
-    import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.navigation.NavDestination
+import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 
-    data class IconWithText(
-        val icon: Int,
-        val text: String
-    )
+data class IconWithText(
+    val icon: Int,
+    val text: String
+)
+data class BottomNavItem(
+    val label: String,
+    val icon: Int,
+    val destination: DirectionDestinationSpec
+)
+data class SwitchScreen(
+    val name: String,
+    val screen: () -> Unit
+)
+data class StringScreen(
+    val name: String,
+    val key: String
+)
+data class ListItem(
+    val name: String,
+    val isSelected: Boolean
+)
+data class SwitchScreenCode(
+    val name: String,
+    val screen: () -> Unit,
+    val code: String
+)
 
-    data class BottomNavItem(
-        val label: String,
-        val icon: Int,
-        val destination: DirectionDestinationSpec
-    )
+data class ListItem2(
+    val title: String,
+    val description: String
+)
 
-    data class SwitchScreen(
-        val name: String,
-        val screen: () -> Unit
-    )
-
-    data class ListItem(
-        val name: String,
-        val isSelected: Boolean
-    )
-    data class SwitchScreenCode(
-        val name: String,
-        val screen: () -> Unit,
-        val code: String
-    )
+data class ScreenState(
+    val isLoading: Boolean = false,
+    val items: List<ListItem2> = emptyList(),
+    val error: String? = null,
+    val endReached: Boolean = false,
+    val page: Int = 0
+)
 """.trimIndent()
 val CodeOfResponse = """
     package com.learn.tutorialcompose
@@ -2982,6 +3230,47 @@ val CodeOfScreen = """
                     append("/${'$'}arg")
                 }
             }
+        }
+    }
+""".trimIndent()
+val CodeOfrememberWindowInfo = """
+    package com.learn.tutorialcompose
+
+    import androidx.compose.runtime.Composable
+    import androidx.compose.ui.platform.LocalConfiguration
+    import androidx.compose.ui.unit.Dp
+    import androidx.compose.ui.unit.dp
+
+    @Composable
+    fun rememberWindowInfo(): WindowInfo {
+        val configuration = LocalConfiguration.current
+        return WindowInfo(
+            screenWidthInfo = when {
+                configuration.screenWidthDp < 600 -> WindowInfo.WindowType.Compact
+                configuration.screenWidthDp < 840 -> WindowInfo.WindowType.Medium
+                else -> WindowInfo.WindowType.Expanded
+            },
+            screenHeighInfo = when {
+                configuration.screenHeightDp < 480 -> WindowInfo.WindowType.Compact
+                configuration.screenHeightDp < 900 -> WindowInfo.WindowType.Medium
+                else -> WindowInfo.WindowType.Expanded
+            },
+            screenWidth = configuration.screenWidthDp.dp,
+            screenHeight = configuration.screenHeightDp.dp
+        )
+    }
+
+
+    data class WindowInfo(
+        val screenWidthInfo: WindowType,
+        val screenHeighInfo: WindowType,
+        val screenWidth: Dp,
+        val screenHeight: Dp
+    ) {
+        sealed class WindowType {
+            object Compact: WindowType()
+            object Medium: WindowType()
+            object Expanded: WindowType()
         }
     }
 """.trimIndent()

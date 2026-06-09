@@ -5,6 +5,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -27,6 +28,7 @@ fun MyApp() {
         bottomBar = {
             if (currentDestination in vm.navScreenIsVisible) {
                 BottomNavBar(
+                    modifier = Modifier.padding(bottom = 18.dp, start = 8.dp, end = 8.dp),
                     navController = navController,
                     items = listOf(
                         BottomNavItem(
@@ -36,12 +38,12 @@ fun MyApp() {
                         ),
                         BottomNavItem(
                             label = "code",
-                            icon = R.drawable.ic_gemini,
+                            icon = R.drawable.ic_codes,
                             destination = BunchOfCodesScreenDestination
                         ),
                         BottomNavItem(
                             label = "profile",
-                            icon = R.drawable.ic_gemini,
+                            icon = R.drawable.ic_profile,
                             destination = ProfileScreenDestination
                         )
                     )
@@ -60,7 +62,6 @@ fun MyApp() {
         DestinationsNavHost(
             navGraph = NavGraphs.root,
             navController = navController,
-            modifier = Modifier.padding(padding),
             dependenciesContainerBuilder = {
                 dependency(vm)
             }

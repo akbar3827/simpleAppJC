@@ -17,12 +17,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -74,7 +77,9 @@ fun BunchOfCodesScreen(
     navigator: DestinationsNavigator,
     vm: MyViewModel
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = remember {
+        SnackbarHostState()
+    }
     val scope: CoroutineScope = rememberCoroutineScope()
 
     Scaffold(
@@ -243,7 +248,8 @@ fun BoxCodes(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp)
+                    .height(400.dp)
+                    .padding(bottom = 200.dp)
                     .background(color = Color.White),
                 contentAlignment = Alignment.Center
             ) {

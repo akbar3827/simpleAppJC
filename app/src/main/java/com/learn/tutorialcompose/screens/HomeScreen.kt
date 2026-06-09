@@ -52,6 +52,7 @@ import com.ramcosta.composedestinations.generated.destinations.FifthScreenDestin
 import com.ramcosta.composedestinations.generated.destinations.FirstScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.FourthScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.SecondScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SeventhScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.SixthScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ThirdScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -173,6 +174,10 @@ fun HomeScreen(
                     SwitchScreen(
                         name = "SixthScreen",
                         screen = { navigator.navigate(SixthScreenDestination) }
+                    ),
+                    SwitchScreen(
+                        name = "SeventhScreen",
+                        screen = { navigator.navigate(SeventhScreenDestination) }
                     )
                 )
             )
@@ -246,7 +251,8 @@ fun BunchOFScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp)
+                    .height(400.dp)
+                    .padding(bottom = 200.dp)
                     .background(color = Color.White),
                 contentAlignment = Alignment.Center
             ) {

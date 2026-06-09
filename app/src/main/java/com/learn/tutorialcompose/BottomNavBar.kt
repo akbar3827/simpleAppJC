@@ -1,6 +1,8 @@
 package com.learn.tutorialcompose
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,7 +25,8 @@ import com.learn.tutorialcompose.ui.theme.BottomNavColor
 import com.learn.tutorialcompose.ui.theme.BottomNavIconColor
 
 
-@Composable fun BottomNavBar(
+@Composable
+fun BottomNavBar(
     items: List<BottomNavItem>,
     navController: NavController,
     modifier: Modifier = Modifier,
@@ -34,26 +37,24 @@ import com.learn.tutorialcompose.ui.theme.BottomNavIconColor
     NavigationBar(
         containerColor = BottomNavColor,
         contentColor = Color.White,
+        windowInsets = WindowInsets(0, 0, 0, 0),
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .height(100.dp)
+            .clip(RoundedCornerShape(24.dp))
+            .height(80.dp)
     ) {
         items.forEach {
             val selected = it.destination.route == currentRoute
-            
             NavigationBarItem(
                 selected = selected,
                 onClick = { onItemCLick(it) },
+                alwaysShowLabel = false,
                 icon = {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            painter = painterResource(id = it.icon),
-                            contentDescription = it.label
-                        )
-                    }
+                    Icon(
+                        painter = painterResource(id = it.icon),
+                        contentDescription = it.label
+                    )
                 },
-                label = { if(selected) Text(it.label) },
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = Color.Transparent,
                     selectedIconColor = BottomNavIconColor,

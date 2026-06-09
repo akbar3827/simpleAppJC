@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,6 +42,8 @@ import com.google.accompanist.permissions.shouldShowRationale
 import com.learn.tutorialcompose.ListItem
 import com.learn.tutorialcompose.MyViewModel
 import com.learn.tutorialcompose.Screen
+import com.learn.tutorialcompose.WindowInfo
+import com.learn.tutorialcompose.rememberWindowInfo
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -80,103 +83,211 @@ fun SixthScreen(
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
-
-
-    Column(modifier = Modifier.padding(top = 40.dp)) {
-        Box(
-            contentAlignment = Alignment.CenterStart,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBackIosNew,
-                contentDescription = "back to home screen",
-                modifier = Modifier.clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {
-                    navigator.popBackStack()
-                }.padding(horizontal = 10.dp)
-            )
-        }
-        LazyColumn(Modifier
-            .height(400.dp)
-            .fillMaxWidth()) {
-            items(items.size) {
-                Row(
+    val windowInfo = rememberWindowInfo()
+    if (windowInfo.screenWidthInfo is WindowInfo.WindowType.Compact) {
+        Column(modifier = Modifier.padding(top = 40.dp)) {
+            Box(
+                contentAlignment = Alignment.CenterStart,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(70.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBackIosNew,
+                    contentDescription = "back to home screen",
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            items = items.mapIndexed { i, item ->
-                                if (i == it) {
-                                    item.copy(isSelected = !item.isSelected)
-                                } else {
-                                    item
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            navigator.popBackStack()
+                        }
+                        .padding(horizontal = 10.dp)
+                )
+            }
+            LazyColumn(
+                Modifier
+                    .height(400.dp)
+                    .fillMaxWidth()
+            ) {
+                items(items.size) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                items = items.mapIndexed { i, item ->
+                                    if (i == it) {
+                                        item.copy(isSelected = !item.isSelected)
+                                    } else {
+                                        item
+                                    }
+                                }
+                            }
+                            .padding(20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = items[it].name)
+                        if (items[it].isSelected) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "selected",
+                                tint = Color.Green,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .height(400.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                permissionState.permissions.forEach { perm ->
+                    when (perm.permission) {
+                        Manifest.permission.CAMERA -> {
+                            when {
+                                perm.status.isGranted -> {
+                                    Text(text = "Camera permissioon is accepted")
+                                }
+
+                                !perm.status.isGranted -> {
+                                    Text(text = "Camera permissioon isn't granted")
+                                }
+
+                                perm.status.shouldShowRationale -> {
+                                    Text(
+                                        text = """Camera permission was permanently denied.
+                                    You can enable it in the app settings.
+                                """.trimMargin()
+                                    )
                                 }
                             }
                         }
-                        .padding(20.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = items[it].name)
-                    if (items[it].isSelected) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = "selected",
-                            tint = Color.Green,
-                            modifier = Modifier.size(16.dp)
-                        )
+
+                        Manifest.permission.RECORD_AUDIO -> {
+                            when {
+                                perm.status.isGranted -> {
+                                    Text(text = "Record audio permissioon is accepted")
+                                }
+
+                                !perm.status.isGranted -> {
+                                    Text(text = "Record Audio permissioon isn't granted")
+                                }
+
+                                perm.status.shouldShowRationale -> {
+                                    Text(
+                                        text = """Recond audio permission was permanently denied.
+                                    You can enable it in the app settings.
+                                """.trimMargin()
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
-        Column(
-            modifier = Modifier
-                .height(400.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            permissionState.permissions.forEach { perm ->
-                when (perm.permission) {
-                    Manifest.permission.CAMERA -> {
-                        when {
-                            perm.status.isGranted -> {
-                                Text(text = "Camera permissioon is accepted")
+    } else {
+        Row (modifier = Modifier.padding(top = 20.dp)) {
+            Box(
+                contentAlignment = Alignment.CenterStart,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBackIosNew,
+                    contentDescription = "back to home screen",
+                    modifier = Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        navigator.popBackStack()
+                    }.padding(horizontal = 10.dp)
+                )
+            }
+            LazyColumn(Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(1f)) {
+                items(items.size) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                items = items.mapIndexed { i, item ->
+                                    if (i == it) {
+                                        item.copy(isSelected = !item.isSelected)
+                                    } else {
+                                        item
+                                    }
+                                }
                             }
-
-                            !perm.status.isGranted -> {
-                                Text(text = "Camera permissioon isn't granted")
-                            }
-
-                            perm.status.shouldShowRationale -> {
-                                Text(
-                                    text = """Camera permission was permanently denied.
-                                    You can enable it in the app settings.
-                                """.trimMargin()
-                                )
-                            }
+                            .padding(20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = items[it].name)
+                        if (items[it].isSelected) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "selected",
+                                tint = Color.Green,
+                                modifier = Modifier.size(16.dp)
+                            )
                         }
                     }
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                permissionState.permissions.forEach { perm ->
+                    when (perm.permission) {
+                        Manifest.permission.CAMERA -> {
+                            when {
+                                perm.status.isGranted -> {
+                                    Text(text = "Camera permissioon is accepted")
+                                }
 
-                    Manifest.permission.RECORD_AUDIO -> {
-                        when {
-                            perm.status.isGranted -> {
-                                Text(text = "Record audio permissioon is accepted")
-                            }
+                                !perm.status.isGranted -> {
+                                    Text(text = "Camera permissioon isn't granted")
+                                }
 
-                            !perm.status.isGranted -> {
-                                Text(text = "Record Audio permissioon isn't granted")
-                            }
-
-                            perm.status.shouldShowRationale -> {
-                                Text(
-                                    text = """Recond audio permission was permanently denied.
+                                perm.status.shouldShowRationale -> {
+                                    Text(
+                                        text = """Camera permission was permanently denied.
                                     You can enable it in the app settings.
                                 """.trimMargin()
-                                )
+                                    )
+                                }
+                            }
+                        }
+
+                        Manifest.permission.RECORD_AUDIO -> {
+                            when {
+                                perm.status.isGranted -> {
+                                    Text(text = "Record audio permissioon is accepted")
+                                }
+
+                                !perm.status.isGranted -> {
+                                    Text(text = "Record Audio permissioon isn't granted")
+                                }
+
+                                perm.status.shouldShowRationale -> {
+                                    Text(
+                                        text = """Recond audio permission was permanently denied.
+                                    You can enable it in the app settings.
+                                """.trimMargin()
+                                    )
+                                }
                             }
                         }
                     }
